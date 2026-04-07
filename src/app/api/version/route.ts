@@ -1,11 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { anthropic } from '@/lib/anthropic';
 import { BRAND_SYSTEM_PROMPT, getContentTypeInstructions } from '@/config/brand';
-import { getOfficeById } from '@/config/offices';
+import { getOfficeById } from '@/lib/officesStore';
 import type { VersionRequest, VersionResult, Adaptation, KeepInMind } from '@/types';
 
-function buildOfficeSystemPrompt(officeId: string): string | null {
-  const office = getOfficeById(officeId);
+async function buildOfficeSystemPrompt(officeId: string): Promise<string | null> {
+  const office = await getOfficeById(officeId);
   if (!office) return null;
 
   const officeBlock = `## OFFICE: ${office.name.toUpperCase()}
@@ -141,13 +141,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     const versions: VersionResult[] = [];
 
     for (const officeId of versionRequest.officeIds) {
-      const office = getOfficeById(officeId);
+      const office = await getOfficeById(officeId);
       if (!office) {
         console.warn(`Office not found, skipping: ${officeId}`);
         continue;
       }
 
-      const officePromptBlock = buildOfficeSystemPrompt(officeId);
+      const officePromptBlock = await buildOfficeSystemPrompt(officeId);
       if (!officePromptBlock) continue;
 
       const systemPrompt = [

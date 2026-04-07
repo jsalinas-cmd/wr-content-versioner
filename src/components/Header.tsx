@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Header() {
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm h-16 flex items-center px-6 shrink-0">
@@ -12,9 +14,17 @@ export default function Header() {
             Content Versioner
           </span>
         </div>
-        <span className="hidden sm:inline-block text-xs text-gray-400 font-medium tracking-wider uppercase">
-          Internal Tool
-        </span>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/admin"
+            className="text-xs text-gray-500 hover:text-gray-700 font-medium tracking-wider uppercase transition-colors"
+          >
+            Admin
+          </Link>
+          <span className="hidden sm:inline-block text-xs text-gray-400 font-medium tracking-wider uppercase">
+            Internal Tool
+          </span>
+        </div>
       </div>
     </header>
   );
