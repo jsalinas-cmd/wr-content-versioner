@@ -2,7 +2,10 @@ import { kv } from '@vercel/kv';
 import { offices as seedOffices } from '@/config/offices';
 import type { OfficeConfig } from '@/types';
 
-const KV_KEY = 'offices';
+// Versioned key: the schema and the real 3-office seed replaced the earlier
+// placeholder set, so use a fresh key to avoid serving stale KV data. Bump this
+// again if the OfficeConfig schema changes in a breaking way.
+const KV_KEY = 'offices_v2';
 
 function kvAvailable(): boolean {
   return !!process.env.KV_REST_API_URL;
@@ -20,6 +23,9 @@ export async function getAllOffices(): Promise<OfficeConfig[]> {
     return seedOffices;
   }
 
+  // Return stored configs as-is. Never fabricate missing fields — especially
+  // givingUrl, where a wrong donation link misroutes gifts. A blank field is a
+  // valid "not configured" state that the app flags rather than invents.
   return stored;
 }
 

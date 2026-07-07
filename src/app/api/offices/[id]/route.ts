@@ -2,16 +2,35 @@ import type { NextRequest } from 'next/server';
 import { updateOffice } from '@/lib/officesStore';
 import type { OfficeConfig, OfficeDirector } from '@/types';
 
-const ALLOWED_KEYS: Set<keyof OfficeConfig> = new Set([
+// Every string field on OfficeConfig that the admin can edit.
+const STRING_FIELDS: (keyof OfficeConfig)[] = [
   'name',
-  'director',
-  'localFocus',
-  'preferredBibleVerses',
-  'toneNotes',
+  'givingUrl',
   'signatureBlock',
-  'localContext',
-  'audienceNotes',
+  'audienceReligious',
+  'audiencePolitical',
+  'politicalPhrasesToAvoid',
+  'preferredBiblicalPhrases',
+  'preferredBibleVerses',
+  'faithPhrasesToAvoid',
+  'programming',
+  'distinctive',
+  'accomplishments',
+  'sentenceStyle',
+  'celebrationTone',
+  'crisisTone',
+  'financialAskStyle',
+  'personalAnecdotes',
+  'outOfCharacterTone',
+];
+
+// `id` is accepted but ignored (updateOffice forces the route id); `director` and
+// `active` are validated separately below.
+const ALLOWED_KEYS: Set<keyof OfficeConfig> = new Set([
+  'id',
+  'director',
   'active',
+  ...STRING_FIELDS,
 ]);
 
 function validatePatch(body: unknown): { valid: true; patch: Partial<OfficeConfig> } | { valid: false; error: string } {
@@ -27,40 +46,14 @@ function validatePatch(body: unknown): { valid: true; patch: Partial<OfficeConfi
     }
   }
 
-  if ('name' in candidate && typeof candidate.name !== 'string') {
-    return { valid: false, error: 'name must be a string' };
-  }
-
-  if ('toneNotes' in candidate && typeof candidate.toneNotes !== 'string') {
-    return { valid: false, error: 'toneNotes must be a string' };
-  }
-
-  if ('signatureBlock' in candidate && typeof candidate.signatureBlock !== 'string') {
-    return { valid: false, error: 'signatureBlock must be a string' };
-  }
-
-  if ('localContext' in candidate && typeof candidate.localContext !== 'string') {
-    return { valid: false, error: 'localContext must be a string' };
-  }
-
-  if ('audienceNotes' in candidate && typeof candidate.audienceNotes !== 'string') {
-    return { valid: false, error: 'audienceNotes must be a string' };
+  for (const field of STRING_FIELDS) {
+    if (field in candidate && typeof candidate[field] !== 'string') {
+      return { valid: false, error: `${field} must be a string` };
+    }
   }
 
   if ('active' in candidate && typeof candidate.active !== 'boolean') {
     return { valid: false, error: 'active must be a boolean' };
-  }
-
-  if ('localFocus' in candidate) {
-    if (!Array.isArray(candidate.localFocus) || !(candidate.localFocus as unknown[]).every((v) => typeof v === 'string')) {
-      return { valid: false, error: 'localFocus must be an array of strings' };
-    }
-  }
-
-  if ('preferredBibleVerses' in candidate) {
-    if (!Array.isArray(candidate.preferredBibleVerses) || !(candidate.preferredBibleVerses as unknown[]).every((v) => typeof v === 'string')) {
-      return { valid: false, error: 'preferredBibleVerses must be an array of strings' };
-    }
   }
 
   if ('director' in candidate) {

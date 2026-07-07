@@ -2,38 +2,81 @@ import type { NextRequest } from 'next/server';
 import { anthropic } from '@/lib/anthropic';
 import { BRAND_SYSTEM_PROMPT, getContentTypeInstructions } from '@/config/brand';
 import { getOfficeById } from '@/lib/officesStore';
-import type { VersionRequest, VersionResult, Adaptation, KeepInMind } from '@/types';
+import type {
+  VersionRequest,
+  VersionResult,
+  Adaptation,
+  KeepInMind,
+  ContentType,
+  SocialPlatform,
+} from '@/types';
+
+const VALID_CONTENT_TYPES: ContentType[] = [
+  'email',
+  'social',
+  'mailing-piece',
+  'announcement',
+];
+
+const VALID_SOCIAL_PLATFORMS: SocialPlatform[] = [
+  'facebook',
+  'instagram',
+  'linkedin',
+];
+
+function fieldOrNone(value: string): string {
+  const v = (value ?? '').trim();
+  return v.length > 0 ? v : '(not provided)';
+}
 
 async function buildOfficeSystemPrompt(officeId: string): Promise<string | null> {
   const office = await getOfficeById(officeId);
   if (!office) return null;
 
+  const director = office.director;
+  const title = director.title.trim() || 'Office Director';
+  const phone = director.phone.trim() || '(not provided)';
+  const givingUrl = office.givingUrl.trim() || '(not configured)';
+  const signature = office.signatureBlock.trim();
+
   const officeBlock = `## OFFICE: ${office.name.toUpperCase()}
 
-**Director:** ${office.director.name}, ${office.director.title}
-**Email:** ${office.director.email}
-**Phone:** ${office.director.phone}
+**Director:** ${director.name}, ${title}
+**Email:** ${director.email}
+**Phone:** ${phone}
 
-**Local Focus Areas:**
-${office.localFocus.map((f) => `- ${f}`).join('\n')}
+**Giving URL (for the swap rule):** ${givingUrl}
 
-**Preferred Bible Verses:**
-Weave 1-2 of these in naturally where appropriate — only if they serve the content, never forced:
-${office.preferredBibleVerses.map((v) => `- ${v}`).join('\n')}
+### AUDIENCE
+**Religious leanings:** ${fieldOrNone(office.audienceReligious)}
+**Political leanings:** ${fieldOrNone(office.audiencePolitical)}
+**Political phrases this office avoids:** ${fieldOrNone(office.politicalPhrasesToAvoid)}
 
-**Tone Notes:**
-${office.toneNotes}
+### FAITH VOICE
+**Biblical phrases the director likes:** ${fieldOrNone(office.preferredBiblicalPhrases)}
+**Preferred Bible verses (weave 1-2 in only where they genuinely fit, never forced):**
+${fieldOrNone(office.preferredBibleVerses)}
+**Faith phrases the director AVOIDS (never use these):** ${fieldOrNone(office.faithPhrasesToAvoid)}
 
-**Local Context:**
-${office.localContext}
+### PROGRAMMING & LOCAL CONTEXT
+**Programs this office offers:** ${fieldOrNone(office.programming)}
+**What makes this office distinctive:** ${fieldOrNone(office.distinctive)}
+**Recent accomplishments (use only if relevant, never fabricate):** ${fieldOrNone(office.accomplishments)}
 
-**Audience Notes:**
-${office.audienceNotes}
+### DIRECTOR VOICE
+**Sentence style:** ${fieldOrNone(office.sentenceStyle)}
+**Tone when celebrating success:** ${fieldOrNone(office.celebrationTone)}
+**Tone when addressing a crisis:** ${fieldOrNone(office.crisisTone)}
+**How the director asks for financial support:** ${fieldOrNone(office.financialAskStyle)}
+**Personal anecdotes the director shares (use only if the content calls for it):** ${fieldOrNone(office.personalAnecdotes)}
+**Tone that would feel OUT OF CHARACTER (avoid entirely):** ${fieldOrNone(office.outOfCharacterTone)}
 
-**Signature Block:**
-Always append this signature exactly as written at the end of the content — no modifications:
-
-${office.signatureBlock}`;
+### SIGNATURE
+${
+  signature
+    ? `Append this signature exactly as written at the end (for email and mailing pieces), with no modifications:\n\n${signature}`
+    : `No signature block is configured for this office. For email and mailing pieces, close in the director's voice and sign with: ${director.name}, ${title}, ${office.name}. Do not invent a phone number or address.`
+}`;
 
   return officeBlock;
 }
@@ -97,11 +140,26 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   if (
-    candidate.contentType !== 'email' &&
-    candidate.contentType !== 'invitation'
+    typeof candidate.contentType !== 'string' ||
+    !VALID_CONTENT_TYPES.includes(candidate.contentType as ContentType)
   ) {
     return Response.json(
-      { error: 'contentType must be "email" or "invitation"' },
+      {
+        error: `contentType must be one of: ${VALID_CONTENT_TYPES.join(', ')}`,
+      },
+      { status: 400 }
+    );
+  }
+
+  if (
+    candidate.socialPlatform !== undefined &&
+    (typeof candidate.socialPlatform !== 'string' ||
+      !VALID_SOCIAL_PLATFORMS.includes(candidate.socialPlatform as SocialPlatform))
+  ) {
+    return Response.json(
+      {
+        error: `socialPlatform must be one of: ${VALID_SOCIAL_PLATFORMS.join(', ')}`,
+      },
       { status: 400 }
     );
   }
@@ -128,11 +186,15 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const versionRequest: VersionRequest = {
     content: candidate.content.trim(),
-    contentType: candidate.contentType,
+    contentType: candidate.contentType as ContentType,
     officeIds: candidate.officeIds as string[],
     additionalInstructions:
       typeof candidate.additionalInstructions === 'string'
         ? candidate.additionalInstructions.trim() || undefined
+        : undefined,
+    socialPlatform:
+      typeof candidate.socialPlatform === 'string'
+        ? (candidate.socialPlatform as SocialPlatform)
         : undefined,
   };
 
@@ -152,12 +214,19 @@ export async function POST(request: NextRequest): Promise<Response> {
 
       const systemPrompt = [
         BRAND_SYSTEM_PROMPT,
-        getContentTypeInstructions(versionRequest.contentType),
+        getContentTypeInstructions(
+          versionRequest.contentType,
+          versionRequest.socialPlatform
+        ),
         officePromptBlock,
       ].join('\n\n');
 
+      const isAnnouncement = versionRequest.contentType === 'announcement';
+
       const userMessage = [
-        `Adapt the following content for ${office.name}:`,
+        isAnnouncement
+          ? `Using the event / announcement details below, WRITE finished announcement copy in the voice of ${office.name}. This is a generation task, not a localization task — the details are a brief, not a piece to preserve. Output written content only: no image descriptions, no photo suggestions, no design or layout notes.`
+          : `LOCALIZE the following content for ${office.name}. Preserve the piece as-is — same format, same structure, same length, same message. Only contextualize per this office (voice register, local references, director signature) and apply the giving-link and terminology rules. Do not rewrite, restructure, or re-order.`,
         '',
         versionRequest.content,
         ...(versionRequest.additionalInstructions

@@ -8,17 +8,10 @@ interface OfficeSelectorProps {
   disabled?: boolean;
 }
 
-const focusTagColor: Record<string, string> = {
-  'refugee resettlement': 'bg-[#e6f4fb] text-[#0080b3]',
-  'employment services': 'bg-[#e6f9f7] text-[#00877a]',
-  'immigration legal services': 'bg-purple-50 text-purple-700',
-  'church partnerships': 'bg-amber-50 text-amber-700',
-  'disaster response': 'bg-red-50 text-red-600',
-  'mental health services': 'bg-[#e6f9f7] text-[#00877a]',
-};
-
-function getFocusTagClass(focus: string): string {
-  return focusTagColor[focus] ?? 'bg-gray-100 text-gray-500';
+function programmingSnippet(programming: string): string {
+  const flat = programming.replace(/\s+/g, ' ').trim();
+  if (flat.length <= 90) return flat;
+  return flat.slice(0, 90).replace(/\s+\S*$/, '') + '…';
 }
 
 export default function OfficeSelector({
@@ -115,21 +108,11 @@ export default function OfficeSelector({
                     {office.name}
                   </span>
                   <span className="text-xs text-gray-500">{office.director.name}</span>
-                  <div className="flex flex-wrap gap-1 mt-0.5">
-                    {office.localFocus.slice(0, 3).map((focus) => (
-                      <span
-                        key={focus}
-                        className={`inline-block px-1.5 py-0.5 text-[10px] font-medium rounded-sm ${getFocusTagClass(focus)}`}
-                      >
-                        {focus}
-                      </span>
-                    ))}
-                    {office.localFocus.length > 3 && (
-                      <span className="inline-block px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-400 rounded-sm">
-                        +{office.localFocus.length - 3}
-                      </span>
-                    )}
-                  </div>
+                  {office.programming.trim() && (
+                    <span className="text-[11px] text-gray-400 leading-snug mt-0.5">
+                      {programmingSnippet(office.programming)}
+                    </span>
+                  )}
                 </div>
               </div>
             </button>

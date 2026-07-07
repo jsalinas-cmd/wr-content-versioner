@@ -9,28 +9,58 @@ export interface OfficeConfig {
   id: string;
   name: string;
   director: OfficeDirector;
-  localFocus: string[];
-  preferredBibleVerses: string[];
-  toneNotes: string;
-  signatureBlock: string;
-  localContext: string;
-  audienceNotes: string;
+
+  // Operational fields (NOT in the director questionnaire — must be supplied separately).
+  // Leave as '' when unknown; the app flags rather than invents these.
+  givingUrl: string; // drives the giving-link swap; '' = not configured (no swap, flag instead)
+  signatureBlock: string; // exact sign-off; '' = fall back to name/title/office
+
+  // Audience (from the questionnaire)
+  audienceReligious: string;
+  audiencePolitical: string;
+  politicalPhrasesToAvoid: string;
+
+  // Faith voice (from the questionnaire)
+  preferredBiblicalPhrases: string;
+  preferredBibleVerses: string;
+  faithPhrasesToAvoid: string;
+
+  // Programming & local context (from the questionnaire)
+  programming: string;
+  distinctive: string;
+  accomplishments: string;
+
+  // Director voice (from the questionnaire)
+  sentenceStyle: string;
+  celebrationTone: string;
+  crisisTone: string;
+  financialAskStyle: string;
+  personalAnecdotes: string;
+  outOfCharacterTone: string;
+
   active: boolean;
 }
 
-export type ContentType = 'email' | 'invitation';
+export type ContentType =
+  | 'email'
+  | 'social'
+  | 'mailing-piece'
+  | 'announcement';
+
+export type SocialPlatform = 'facebook' | 'instagram' | 'linkedin';
 
 export interface VersionRequest {
   content: string;
   contentType: ContentType;
   officeIds: string[];
   additionalInstructions?: string;
+  socialPlatform?: SocialPlatform;
 }
 
 export interface Adaptation {
-  text: string;           // The adapted text snippet
-  reason: string;         // Which office config field drove this (e.g., "Director tone: pastoral and warm")
-  configSource: string;   // Short label like "Tone", "Local Focus", "Bible Verse", "Signature", "Audience", "Local Context"
+  text: string;
+  reason: string;
+  configSource: string;
 }
 
 export interface KeepInMind {

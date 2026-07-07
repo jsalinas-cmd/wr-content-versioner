@@ -7,7 +7,7 @@ import ContentInput from "@/components/ContentInput";
 import OfficeSelector from "@/components/OfficeSelector";
 import OutputSection from "@/components/OutputSection";
 import AdminPanel from "@/components/AdminPanel";
-import type { ContentType, VersionResult } from "@/types";
+import type { ContentType, SocialPlatform, VersionResult } from "@/types";
 
 type Tab = "versioner" | "admin";
 
@@ -16,6 +16,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("versioner");
   const [content, setContent] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
+  const [socialPlatform, setSocialPlatform] = useState<SocialPlatform>("facebook");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
   const [selectedOffices, setSelectedOffices] = useState<string[]>([]);
   const [versions, setVersions] = useState<VersionResult[]>([]);
@@ -47,6 +48,7 @@ export default function Home() {
           contentType,
           officeIds: selectedOffices,
           additionalInstructions: additionalInstructions || undefined,
+          socialPlatform: contentType === "social" ? socialPlatform : undefined,
         }),
       });
 
@@ -70,7 +72,7 @@ export default function Home() {
       setIsLoading(false);
       setLoadingOffices([]);
     }
-  }, [content, contentType, selectedOffices, additionalInstructions]);
+  }, [content, contentType, socialPlatform, selectedOffices, additionalInstructions]);
 
   if (!authenticated) {
     return <PasswordGate onAuthenticated={() => setAuthenticated(true)} />;
@@ -121,9 +123,12 @@ export default function Home() {
               onContentChange={setContent}
               contentType={contentType}
               onContentTypeChange={setContentType}
+              socialPlatform={socialPlatform}
+              onSocialPlatformChange={setSocialPlatform}
               additionalInstructions={additionalInstructions}
               onAdditionalInstructionsChange={setAdditionalInstructions}
               disabled={isLoading}
+              onUnauthorized={() => setAuthenticated(false)}
             />
 
             <OfficeSelector
