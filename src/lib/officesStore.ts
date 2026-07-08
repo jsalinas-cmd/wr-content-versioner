@@ -5,7 +5,7 @@ import type { OfficeConfig } from '@/types';
 // Versioned key: the schema and the real 3-office seed replaced the earlier
 // placeholder set, so use a fresh key to avoid serving stale KV data. Bump this
 // again if the OfficeConfig schema changes in a breaking way.
-const KV_KEY = 'offices_v2';
+const KV_KEY = 'offices_v3';
 
 function kvAvailable(): boolean {
   return !!process.env.KV_REST_API_URL;
