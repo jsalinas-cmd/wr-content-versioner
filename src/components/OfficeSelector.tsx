@@ -5,6 +5,8 @@ import { offices } from '@/config/offices';
 interface OfficeSelectorProps {
   selectedOffices: string[];
   onSelectionChange: (offices: string[]) => void;
+  givingUrlOverrides: Record<string, string>;
+  onGivingUrlOverrideChange: (officeId: string, url: string) => void;
   disabled?: boolean;
 }
 
@@ -17,6 +19,8 @@ function programmingSnippet(programming: string): string {
 export default function OfficeSelector({
   selectedOffices,
   onSelectionChange,
+  givingUrlOverrides,
+  onGivingUrlOverrideChange,
   disabled = false,
 }: OfficeSelectorProps) {
   const activeOffices = offices.filter((o) => o.active);
@@ -62,10 +66,12 @@ export default function OfficeSelector({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {activeOffices.map((office) => {
           const isSelected = selectedOffices.includes(office.id);
+          const givingOptions = office.givingUrlOptions ?? [];
+          const selectedGivingUrl = givingUrlOverrides[office.id] ?? office.givingUrl;
 
           return (
+            <div key={office.id} className="flex flex-col">
             <button
-              key={office.id}
               type="button"
               onClick={() => toggleOffice(office.id)}
               className={`relative text-left rounded-lg border p-4 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#009DDC] focus:ring-offset-1 hover:-translate-y-0.5 ${
@@ -116,6 +122,32 @@ export default function OfficeSelector({
                 </div>
               </div>
             </button>
+
+            {isSelected && givingOptions.length > 0 && (
+              <div className="mt-2 rounded-lg border border-[#009DDC]/30 bg-[#f0f9ff] px-3 py-2.5">
+                <p className="text-[11px] font-medium text-gray-600 uppercase tracking-wide mb-1.5">
+                  Giving link
+                </p>
+                <div className="flex flex-col gap-1">
+                  {givingOptions.map((opt) => (
+                    <label
+                      key={opt.url}
+                      className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name={`giving-${office.id}`}
+                        checked={selectedGivingUrl === opt.url}
+                        onChange={() => onGivingUrlOverrideChange(office.id, opt.url)}
+                        className="w-3.5 h-3.5 text-[#009DDC] focus:ring-[#009DDC]"
+                      />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+            </div>
           );
         })}
       </div>

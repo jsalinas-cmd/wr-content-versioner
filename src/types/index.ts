@@ -5,6 +5,11 @@ export interface OfficeDirector {
   phone: string;
 }
 
+export interface GivingLinkOption {
+  label: string;
+  url: string;
+}
+
 export interface OfficeConfig {
   id: string;
   name: string;
@@ -12,7 +17,10 @@ export interface OfficeConfig {
 
   // Operational fields (NOT in the director questionnaire — must be supplied separately).
   // Leave as '' when unknown; the app flags rather than invents these.
-  givingUrl: string; // drives the giving-link swap; '' = not configured (no swap, flag instead)
+  givingUrl: string; // default giving link for the swap; '' = not configured (no swap, flag instead)
+  // Offices that span multiple sites (e.g. California) offer a choice of giving link at
+  // versioning time. When present, the user picks one; the pick overrides givingUrl for that run.
+  givingUrlOptions?: GivingLinkOption[];
   signatureBlock: string; // exact sign-off; '' = fall back to name/title/office
 
   // Audience (from the questionnaire)
@@ -55,6 +63,9 @@ export interface VersionRequest {
   officeIds: string[];
   additionalInstructions?: string;
   socialPlatform?: SocialPlatform;
+  // Per-office giving-link override, keyed by office id. Used when an office has
+  // givingUrlOptions and the user picked a specific site link for this run.
+  givingUrlOverrides?: Record<string, string>;
 }
 
 export interface Adaptation {

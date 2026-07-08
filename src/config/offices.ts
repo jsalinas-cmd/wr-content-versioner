@@ -72,12 +72,14 @@ export const offices: OfficeConfig[] = [
       email: "MDandeneau@wr.org",
       phone: "",
     },
-    // California is a region with 3 sub-sites. Single office for now (Mark's regional voice),
-    // defaulting to the Sacramento link — WR plans to consolidate all CA giving to it next FY.
-    // Other site links, kept for a possible future sub-site split:
-    //   Modesto: https://give.worldrelief.org/site/Donation2?df_id=1984&mfc_pref=T&1984.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F
-    //   SoCal:   https://give.worldrelief.org/site/Donation2?df_id=1981&mfc_pref=T&1981.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F
+    // California is a region with 3 sub-sites; the user picks which giving link to swap in
+    // per generation. Default is Sacramento — WR plans to consolidate all CA giving to it next FY.
     givingUrl: "https://give.worldrelief.org/site/Donation2?2024.donation=form1&df_id=2024&mfc_pref=T&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F",
+    givingUrlOptions: [
+      { label: "Sacramento", url: "https://give.worldrelief.org/site/Donation2?2024.donation=form1&df_id=2024&mfc_pref=T&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F" },
+      { label: "Modesto", url: "https://give.worldrelief.org/site/Donation2?df_id=1984&mfc_pref=T&1984.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F" },
+      { label: "SoCal", url: "https://give.worldrelief.org/site/Donation2?df_id=1981&mfc_pref=T&1981.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fwww.google.com%2F" },
+    ],
     signatureBlock: "Mark Dandeneau, MSW\nRegional Director\nWorld Relief California",
     audienceReligious: "Our donors and partners come from diverse religious backgrounds. In Sacramento and San Diego, they often lean ecumenical, focusing on social justice and systemic support. Modesto draws heavily from traditional, evangelical roots centered on personal charity and stewardship. Garden Grove connects diverse immigrant congregations, including Hispanic and Vietnamese churches, with local suburban parishes, all joined in a shared commitment to welcome those in need.",
     audiencePolitical: "Political views vary across our four regions. Sacramento and San Diego generally hold more progressive perspectives focused on advocacy and human dignity. Modesto is a more conservative community that values personal responsibility and local stewardship. Garden Grove is quite moderate, where different cultural backgrounds shape a practical, family-first approach. We find common ground by focusing entirely on our shared responsibility to care for our neighbors.",

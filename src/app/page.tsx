@@ -19,6 +19,7 @@ export default function Home() {
   const [socialPlatform, setSocialPlatform] = useState<SocialPlatform>("facebook");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
   const [selectedOffices, setSelectedOffices] = useState<string[]>([]);
+  const [givingUrlOverrides, setGivingUrlOverrides] = useState<Record<string, string>>({});
   const [versions, setVersions] = useState<VersionResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingOffices, setLoadingOffices] = useState<string[]>([]);
@@ -49,6 +50,8 @@ export default function Home() {
           officeIds: selectedOffices,
           additionalInstructions: additionalInstructions || undefined,
           socialPlatform: contentType === "social" ? socialPlatform : undefined,
+          givingUrlOverrides:
+            Object.keys(givingUrlOverrides).length > 0 ? givingUrlOverrides : undefined,
         }),
       });
 
@@ -72,7 +75,7 @@ export default function Home() {
       setIsLoading(false);
       setLoadingOffices([]);
     }
-  }, [content, contentType, socialPlatform, selectedOffices, additionalInstructions]);
+  }, [content, contentType, socialPlatform, selectedOffices, additionalInstructions, givingUrlOverrides]);
 
   if (!authenticated) {
     return <PasswordGate onAuthenticated={() => setAuthenticated(true)} />;
@@ -134,6 +137,10 @@ export default function Home() {
             <OfficeSelector
               selectedOffices={selectedOffices}
               onSelectionChange={setSelectedOffices}
+              givingUrlOverrides={givingUrlOverrides}
+              onGivingUrlOverrideChange={(officeId, url) =>
+                setGivingUrlOverrides((prev) => ({ ...prev, [officeId]: url }))
+              }
               disabled={isLoading}
             />
 

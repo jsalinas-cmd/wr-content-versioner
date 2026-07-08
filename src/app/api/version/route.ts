@@ -29,14 +29,17 @@ function fieldOrNone(value: string): string {
   return v.length > 0 ? v : '(not provided)';
 }
 
-async function buildOfficeSystemPrompt(officeId: string): Promise<string | null> {
+async function buildOfficeSystemPrompt(
+  officeId: string,
+  overrideGivingUrl?: string
+): Promise<string | null> {
   const office = await getOfficeById(officeId);
   if (!office) return null;
 
   const director = office.director;
   const title = director.title.trim() || 'Office Director';
   const phone = director.phone.trim() || '(not provided)';
-  const givingUrl = office.givingUrl.trim() || '(not configured)';
+  const givingUrl = (overrideGivingUrl ?? office.givingUrl).trim() || '(not configured)';
   const signature = office.signatureBlock.trim();
 
   const officeBlock = `## OFFICE: ${office.name.toUpperCase()}
@@ -184,6 +187,22 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
   }
 
+  const overridesValid =
+    candidate.givingUrlOverrides === undefined ||
+    (typeof candidate.givingUrlOverrides === 'object' &&
+      candidate.givingUrlOverrides !== null &&
+      !Array.isArray(candidate.givingUrlOverrides) &&
+      Object.values(candidate.givingUrlOverrides as Record<string, unknown>).every(
+        (v) => typeof v === 'string'
+      ));
+
+  if (!overridesValid) {
+    return Response.json(
+      { error: 'givingUrlOverrides must be an object mapping officeId to a URL string' },
+      { status: 400 }
+    );
+  }
+
   const versionRequest: VersionRequest = {
     content: candidate.content.trim(),
     contentType: candidate.contentType as ContentType,
@@ -196,6 +215,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       typeof candidate.socialPlatform === 'string'
         ? (candidate.socialPlatform as SocialPlatform)
         : undefined,
+    givingUrlOverrides:
+      candidate.givingUrlOverrides === undefined
+        ? undefined
+        : (candidate.givingUrlOverrides as Record<string, string>),
   };
 
   // Generate versions
@@ -209,7 +232,10 @@ export async function POST(request: NextRequest): Promise<Response> {
         continue;
       }
 
-      const officePromptBlock = await buildOfficeSystemPrompt(officeId);
+      const officePromptBlock = await buildOfficeSystemPrompt(
+        officeId,
+        versionRequest.givingUrlOverrides?.[officeId]
+      );
       if (!officePromptBlock) continue;
 
       const systemPrompt = [

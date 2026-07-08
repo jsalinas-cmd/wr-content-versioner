@@ -30,6 +30,7 @@ const ALLOWED_KEYS: Set<keyof OfficeConfig> = new Set([
   'id',
   'director',
   'active',
+  'givingUrlOptions',
   ...STRING_FIELDS,
 ]);
 
@@ -66,6 +67,25 @@ function validatePatch(body: unknown): { valid: true; patch: Partial<OfficeConfi
       if (field in dir && typeof dir[field] !== 'string') {
         return { valid: false, error: `director.${field} must be a string` };
       }
+    }
+  }
+
+  if ('givingUrlOptions' in candidate) {
+    const opts = candidate.givingUrlOptions;
+    const ok =
+      Array.isArray(opts) &&
+      opts.every(
+        (o) =>
+          typeof o === 'object' &&
+          o !== null &&
+          typeof (o as Record<string, unknown>).label === 'string' &&
+          typeof (o as Record<string, unknown>).url === 'string'
+      );
+    if (!ok) {
+      return {
+        valid: false,
+        error: 'givingUrlOptions must be an array of { label, url } string pairs',
+      };
     }
   }
 
