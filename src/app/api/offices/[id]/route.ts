@@ -123,6 +123,9 @@ export async function PUT(
       return Response.json({ error: error.message }, { status: 404 });
     }
     console.error('Error updating office:', error);
-    return Response.json({ error: 'Failed to update office' }, { status: 500 });
+    return Response.json(
+      { error: error instanceof Error ? error.message : 'Failed to update office' },
+      { status: 500 }
+    );
   }
 }

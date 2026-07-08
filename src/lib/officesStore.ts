@@ -17,16 +17,24 @@ export async function getAllOffices(): Promise<OfficeConfig[]> {
     return seedOffices;
   }
 
-  const stored = await kv.get<OfficeConfig[]>(KV_KEY);
-  if (!stored || stored.length === 0) {
-    await kv.set(KV_KEY, seedOffices);
+  // KV is configured, but if the store is unreachable (deleted/paused DB, bad URL),
+  // don't take the whole app down — fall back to the seed. The seed carries the real
+  // office data, so generation still works; only Admin edits won't persist until KV
+  // is restored.
+  try {
+    const stored = await kv.get<OfficeConfig[]>(KV_KEY);
+    if (!stored || stored.length === 0) {
+      await kv.set(KV_KEY, seedOffices);
+      return seedOffices;
+    }
+    // Return stored configs as-is. Never fabricate missing fields — especially
+    // givingUrl, where a wrong donation link misroutes gifts. A blank field is a
+    // valid "not configured" state that the app flags rather than invents.
+    return stored;
+  } catch (error) {
+    console.warn('[officesStore] KV unreachable — falling back to seed data:', error);
     return seedOffices;
   }
-
-  // Return stored configs as-is. Never fabricate missing fields — especially
-  // givingUrl, where a wrong donation link misroutes gifts. A blank field is a
-  // valid "not configured" state that the app flags rather than invents.
-  return stored;
 }
 
 export async function getOfficeById(id: string): Promise<OfficeConfig | undefined> {
@@ -47,7 +55,13 @@ export async function updateOffice(id: string, patch: Partial<OfficeConfig>): Pr
   next[index] = updated;
 
   if (kvAvailable()) {
-    await kv.set(KV_KEY, next);
+    try {
+      await kv.set(KV_KEY, next);
+    } catch {
+      throw new Error(
+        'Office changes could not be saved — the data store (KV) is currently unavailable. Reconnect Upstash Redis in Vercel Storage and try again.'
+      );
+    }
   }
 
   return updated;

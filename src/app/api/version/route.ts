@@ -287,7 +287,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   } catch (error) {
     console.error('Error generating content versions:', error);
     return Response.json(
-      { error: 'Failed to generate content versions' },
+      { error: 'Failed to generate content versions. Please try again.' },
       { status: 500 }
     );
   }
