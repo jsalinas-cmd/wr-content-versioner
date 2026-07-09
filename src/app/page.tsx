@@ -19,11 +19,20 @@ export default function Home() {
   const [socialPlatform, setSocialPlatform] = useState<SocialPlatform>("facebook");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
   const [selectedOffices, setSelectedOffices] = useState<string[]>([]);
-  const [givingUrlOverrides, setGivingUrlOverrides] = useState<Record<string, string>>({});
+  const [givingUrlOverrides, setGivingUrlOverrides] = useState<Record<string, string[]>>({});
   const [versions, setVersions] = useState<VersionResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingOffices, setLoadingOffices] = useState<string[]>([]);
   const [error, setError] = useState("");
+  // Snapshot of the params that produced the current versions, so a single-card
+  // Regenerate reruns against the same source content (not whatever's in the box now).
+  const [lastParams, setLastParams] = useState<{
+    content: string;
+    contentType: ContentType;
+    socialPlatform: SocialPlatform;
+    additionalInstructions: string;
+  } | null>(null);
+  const [regeneratingKeys, setRegeneratingKeys] = useState<Set<string>>(new Set());
 
   const handleGenerate = useCallback(async () => {
     if (!content.trim()) {
@@ -69,6 +78,7 @@ export default function Home() {
 
       const data = await response.json();
       setVersions(data.versions);
+      setLastParams({ content, contentType, socialPlatform, additionalInstructions });
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
@@ -76,6 +86,64 @@ export default function Home() {
       setLoadingOffices([]);
     }
   }, [content, contentType, socialPlatform, selectedOffices, additionalInstructions, givingUrlOverrides]);
+
+  const handleRegenerate = useCallback(
+    async (version: VersionResult) => {
+      if (!lastParams) return;
+      const key = `${version.officeId}::${version.givingUrlUsed ?? ""}`;
+      setRegeneratingKeys((prev) => new Set(prev).add(key));
+
+      try {
+        const response = await fetch("/api/version", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: lastParams.content,
+            contentType: lastParams.contentType,
+            officeIds: [version.officeId],
+            additionalInstructions: lastParams.additionalInstructions || undefined,
+            socialPlatform:
+              lastParams.contentType === "social" ? lastParams.socialPlatform : undefined,
+            givingUrlOverrides: version.givingUrlUsed
+              ? { [version.officeId]: [version.givingUrlUsed] }
+              : undefined,
+          }),
+        });
+
+        if (response.status === 401) {
+          setAuthenticated(false);
+          setError("Session expired. Please log in again.");
+          return;
+        }
+        if (!response.ok) {
+          setError("Could not regenerate that version. Please try again.");
+          return;
+        }
+
+        const data = await response.json();
+        const fresh = (data.versions as VersionResult[])[0];
+        if (fresh) {
+          setVersions((prev) =>
+            prev.map((v) =>
+              v.officeId === version.officeId &&
+              (v.givingUrlUsed ?? "") === (version.givingUrlUsed ?? "")
+                ? fresh
+                : v
+            )
+          );
+        }
+      } catch {
+        setError("Network error while regenerating. Please try again.");
+      } finally {
+        setRegeneratingKeys((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
+          return next;
+        });
+      }
+    },
+    [lastParams]
+  );
 
   if (!authenticated) {
     return <PasswordGate onAuthenticated={() => setAuthenticated(true)} />;
@@ -138,8 +206,8 @@ export default function Home() {
               selectedOffices={selectedOffices}
               onSelectionChange={setSelectedOffices}
               givingUrlOverrides={givingUrlOverrides}
-              onGivingUrlOverrideChange={(officeId, url) =>
-                setGivingUrlOverrides((prev) => ({ ...prev, [officeId]: url }))
+              onGivingUrlOverrideChange={(officeId, urls) =>
+                setGivingUrlOverrides((prev) => ({ ...prev, [officeId]: urls }))
               }
               disabled={isLoading}
             />
@@ -174,6 +242,8 @@ export default function Home() {
               versions={versions}
               isLoading={isLoading}
               loadingOffices={loadingOffices}
+              onRegenerate={handleRegenerate}
+              regeneratingKeys={regeneratingKeys}
             />
           </div>
         ) : (

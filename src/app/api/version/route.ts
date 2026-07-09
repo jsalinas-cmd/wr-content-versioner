@@ -9,6 +9,7 @@ import type {
   KeepInMind,
   ContentType,
   SocialPlatform,
+  OfficeConfig,
 } from '@/types';
 
 const VALID_CONTENT_TYPES: ContentType[] = [
@@ -29,13 +30,10 @@ function fieldOrNone(value: string): string {
   return v.length > 0 ? v : '(not provided)';
 }
 
-async function buildOfficeSystemPrompt(
-  officeId: string,
+function buildOfficeSystemPrompt(
+  office: OfficeConfig,
   overrideGivingUrl?: string
-): Promise<string | null> {
-  const office = await getOfficeById(officeId);
-  if (!office) return null;
-
+): string {
   const director = office.director;
   const title = director.title.trim() || 'Office Director';
   const phone = director.phone.trim() || '(not provided)';
@@ -110,6 +108,75 @@ function parseClaudeResponse(
           type: 'info' as const,
           message:
             'Structured analysis unavailable for this version. Review the content manually for brand consistency.',
+        },
+      ],
+    };
+  }
+}
+
+// Generate one version for a single (office, giving-link) pair. Isolates its own
+// errors so one office failing doesn't sink the whole batch — a failed version comes
+// back with an empty body and a warning so the user can regenerate just that card.
+async function generateOne(
+  office: OfficeConfig,
+  overrideUrl: string,
+  req: VersionRequest
+): Promise<VersionResult> {
+  const variantLabel = office.givingUrlOptions?.find((o) => o.url === overrideUrl)?.label;
+  const base = {
+    officeId: office.id,
+    officeName: office.name,
+    directorName: office.director.name,
+    directorEmail: office.director.email,
+    variantLabel,
+    givingUrlUsed: overrideUrl || undefined,
+  };
+
+  try {
+    const systemPrompt = [
+      BRAND_SYSTEM_PROMPT,
+      getContentTypeInstructions(req.contentType, req.socialPlatform),
+      buildOfficeSystemPrompt(office, overrideUrl),
+    ].join('\n\n');
+
+    const isAnnouncement = req.contentType === 'announcement';
+    const userMessage = [
+      isAnnouncement
+        ? `Using the event / announcement details below, WRITE finished announcement copy in the voice of ${office.name}. This is a generation task, not a localization task — the details are a brief, not a piece to preserve. Output written content only: no image descriptions, no photo suggestions, no design or layout notes.`
+        : `LOCALIZE the following content for ${office.name}. Preserve the piece as-is — same format, same structure, same length, same message. Only contextualize per this office (voice register, local references, director signature) and apply the giving-link and terminology rules. Do not rewrite, restructure, or re-order.`,
+      '',
+      req.content,
+      ...(req.additionalInstructions
+        ? ['', `Additional instructions: ${req.additionalInstructions}`]
+        : []),
+    ].join('\n');
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }],
+    });
+
+    const textBlock = response.content.find((block) => block.type === 'text');
+    const parsed = parseClaudeResponse(textBlock ? textBlock.text : '');
+
+    return {
+      ...base,
+      content: parsed.content,
+      adaptations: parsed.adaptations,
+      keepInMind: parsed.keepInMind,
+    };
+  } catch (error) {
+    console.error(`Error generating version for ${office.id}:`, error);
+    return {
+      ...base,
+      content: '',
+      adaptations: [],
+      keepInMind: [
+        {
+          type: 'warning',
+          message: 'This version could not be generated. Click Regenerate to try again.',
         },
       ],
     };
@@ -193,12 +260,15 @@ export async function POST(request: NextRequest): Promise<Response> {
       candidate.givingUrlOverrides !== null &&
       !Array.isArray(candidate.givingUrlOverrides) &&
       Object.values(candidate.givingUrlOverrides as Record<string, unknown>).every(
-        (v) => typeof v === 'string'
+        (v) => Array.isArray(v) && v.every((u) => typeof u === 'string')
       ));
 
   if (!overridesValid) {
     return Response.json(
-      { error: 'givingUrlOverrides must be an object mapping officeId to a URL string' },
+      {
+        error:
+          'givingUrlOverrides must be an object mapping officeId to an array of URL strings',
+      },
       { status: 400 }
     );
   }
@@ -218,12 +288,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     givingUrlOverrides:
       candidate.givingUrlOverrides === undefined
         ? undefined
-        : (candidate.givingUrlOverrides as Record<string, string>),
+        : (candidate.givingUrlOverrides as Record<string, string[]>),
   };
 
-  // Generate versions
+  // Build one job per (office × selected giving link), then generate them all in
+  // parallel. An office with multiple selected links (e.g. California → Sacramento +
+  // Modesto) produces one version per link — same voice, different giving link.
   try {
-    const versions: VersionResult[] = [];
+    const jobs: { office: OfficeConfig; url: string }[] = [];
 
     for (const officeId of versionRequest.officeIds) {
       const office = await getOfficeById(officeId);
@@ -231,57 +303,17 @@ export async function POST(request: NextRequest): Promise<Response> {
         console.warn(`Office not found, skipping: ${officeId}`);
         continue;
       }
-
-      const officePromptBlock = await buildOfficeSystemPrompt(
-        officeId,
-        versionRequest.givingUrlOverrides?.[officeId]
-      );
-      if (!officePromptBlock) continue;
-
-      const systemPrompt = [
-        BRAND_SYSTEM_PROMPT,
-        getContentTypeInstructions(
-          versionRequest.contentType,
-          versionRequest.socialPlatform
-        ),
-        officePromptBlock,
-      ].join('\n\n');
-
-      const isAnnouncement = versionRequest.contentType === 'announcement';
-
-      const userMessage = [
-        isAnnouncement
-          ? `Using the event / announcement details below, WRITE finished announcement copy in the voice of ${office.name}. This is a generation task, not a localization task — the details are a brief, not a piece to preserve. Output written content only: no image descriptions, no photo suggestions, no design or layout notes.`
-          : `LOCALIZE the following content for ${office.name}. Preserve the piece as-is — same format, same structure, same length, same message. Only contextualize per this office (voice register, local references, director signature) and apply the giving-link and terminology rules. Do not rewrite, restructure, or re-order.`,
-        '',
-        versionRequest.content,
-        ...(versionRequest.additionalInstructions
-          ? ['', `Additional instructions: ${versionRequest.additionalInstructions}`]
-          : []),
-      ].join('\n');
-
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMessage }],
-      });
-
-      const textBlock = response.content.find((block) => block.type === 'text');
-      const rawText = textBlock ? textBlock.text : '';
-
-      const parsed = parseClaudeResponse(rawText);
-
-      versions.push({
-        officeId: office.id,
-        officeName: office.name,
-        directorName: office.director.name,
-        directorEmail: office.director.email,
-        content: parsed.content,
-        adaptations: parsed.adaptations,
-        keepInMind: parsed.keepInMind,
-      });
+      const overrideUrls = versionRequest.givingUrlOverrides?.[officeId];
+      const urls =
+        overrideUrls && overrideUrls.length > 0 ? overrideUrls : [office.givingUrl];
+      for (const url of urls) {
+        jobs.push({ office, url });
+      }
     }
+
+    const versions = await Promise.all(
+      jobs.map((job) => generateOne(job.office, job.url, versionRequest))
+    );
 
     return Response.json({ versions }, { status: 200 });
   } catch (error) {

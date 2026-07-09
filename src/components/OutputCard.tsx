@@ -5,12 +5,15 @@ import type { Adaptation, KeepInMind } from '@/types';
 
 interface OutputCardProps {
   officeName: string;
+  variantLabel?: string;
   directorName: string;
   directorEmail?: string;
   content: string;
   adaptations: Adaptation[];
   keepInMind: KeepInMind[];
   isLoading?: boolean;
+  isRegenerating?: boolean;
+  onRegenerate?: () => void;
   animationDelay?: number;
 }
 
@@ -105,12 +108,15 @@ const keepInMindDotColor: Record<KeepInMind['type'], string> = {
 
 export default function OutputCard({
   officeName,
+  variantLabel,
   directorName,
   directorEmail,
   content,
   adaptations,
   keepInMind,
   isLoading = false,
+  isRegenerating = false,
+  onRegenerate,
   animationDelay = 0,
 }: OutputCardProps) {
   const [copied, setCopied] = useState(false);
@@ -171,6 +177,11 @@ export default function OutputCard({
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
           <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
           <span className="ml-2 text-xs text-gray-500 font-medium truncate">{subject}</span>
+          {variantLabel && (
+            <span className="ml-auto shrink-0 text-[10px] font-semibold text-[#009DDC] bg-[#e6f4fb] rounded px-1.5 py-0.5 whitespace-nowrap">
+              {variantLabel}
+            </span>
+          )}
         </div>
 
         {/* Email window */}
@@ -251,12 +262,38 @@ export default function OutputCard({
           </div>
         </div>
 
-        {/* Copy button row */}
+        {/* Action button row */}
         {!isLoading && (
-          <div className="flex justify-end px-3 pb-3">
+          <div className="flex justify-end items-center gap-2 px-3 pb-3">
+            {onRegenerate && (
+              <button
+                type="button"
+                onClick={onRegenerate}
+                disabled={isRegenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 text-gray-600 bg-white hover:border-[#009DDC] hover:text-[#009DDC] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#009DDC] focus:ring-offset-1 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isRegenerating ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Regenerating…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Regenerate
+                  </>
+                )}
+              </button>
+            )}
             <button
               type="button"
               onClick={handleCopy}
+              disabled={isRegenerating}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#009DDC] focus:ring-offset-1 ${
                 copied
                   ? 'border-[#009DDC] text-[#009DDC] bg-[#f0f9ff]'

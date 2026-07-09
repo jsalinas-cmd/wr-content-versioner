@@ -63,9 +63,10 @@ export interface VersionRequest {
   officeIds: string[];
   additionalInstructions?: string;
   socialPlatform?: SocialPlatform;
-  // Per-office giving-link override, keyed by office id. Used when an office has
-  // givingUrlOptions and the user picked a specific site link for this run.
-  givingUrlOverrides?: Record<string, string>;
+  // Per-office giving-link selection, keyed by office id. Each office maps to one or
+  // more chosen giving URLs; multiple URLs produce one version per URL (same voice,
+  // different giving link). Offices without a selection use their default givingUrl.
+  givingUrlOverrides?: Record<string, string[]>;
 }
 
 export interface Adaptation {
@@ -87,4 +88,8 @@ export interface VersionResult {
   content: string;
   adaptations: Adaptation[];
   keepInMind: KeepInMind[];
+  // Set when the office had multiple giving-link options (e.g. California → "Sacramento").
+  variantLabel?: string;
+  // The giving URL used for this version — distinguishes multi-link variants of one office.
+  givingUrlUsed?: string;
 }

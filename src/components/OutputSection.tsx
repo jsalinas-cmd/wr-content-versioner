@@ -9,6 +9,8 @@ interface OutputSectionProps {
   versions: VersionResult[];
   isLoading: boolean;
   loadingOffices: string[];
+  onRegenerate: (version: VersionResult) => void;
+  regeneratingKeys: Set<string>;
 }
 
 function getOfficeName(id: string): string {
@@ -19,6 +21,8 @@ export default function OutputSection({
   versions,
   isLoading,
   loadingOffices,
+  onRegenerate,
+  regeneratingKeys,
 }: OutputSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const hasContent = versions.length > 0 || (isLoading && loadingOffices.length > 0);
@@ -59,16 +63,21 @@ export default function OutputSection({
           const delay = card.index * 80;
 
           if (card.type === 'complete') {
+            const v = card.data;
+            const key = `${v.officeId}::${v.givingUrlUsed ?? ''}`;
             return (
               <OutputCard
-                key={card.data.officeId}
-                officeName={card.data.officeName}
-                directorName={card.data.directorName}
-                directorEmail={card.data.directorEmail}
-                content={card.data.content}
-                adaptations={card.data.adaptations}
-                keepInMind={card.data.keepInMind}
+                key={key}
+                officeName={v.officeName}
+                variantLabel={v.variantLabel}
+                directorName={v.directorName}
+                directorEmail={v.directorEmail}
+                content={v.content}
+                adaptations={v.adaptations}
+                keepInMind={v.keepInMind}
                 isLoading={false}
+                isRegenerating={regeneratingKeys.has(key)}
+                onRegenerate={() => onRegenerate(v)}
                 animationDelay={delay}
               />
             );

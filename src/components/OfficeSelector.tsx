@@ -5,8 +5,8 @@ import { offices } from '@/config/offices';
 interface OfficeSelectorProps {
   selectedOffices: string[];
   onSelectionChange: (offices: string[]) => void;
-  givingUrlOverrides: Record<string, string>;
-  onGivingUrlOverrideChange: (officeId: string, url: string) => void;
+  givingUrlOverrides: Record<string, string[]>;
+  onGivingUrlOverrideChange: (officeId: string, urls: string[]) => void;
   disabled?: boolean;
 }
 
@@ -67,7 +67,7 @@ export default function OfficeSelector({
         {activeOffices.map((office) => {
           const isSelected = selectedOffices.includes(office.id);
           const givingOptions = office.givingUrlOptions ?? [];
-          const selectedGivingUrl = givingUrlOverrides[office.id] ?? office.givingUrl;
+          const selectedGivingUrls = givingUrlOverrides[office.id] ?? [office.givingUrl];
 
           return (
             <div key={office.id} className="flex flex-col">
@@ -126,24 +126,35 @@ export default function OfficeSelector({
             {isSelected && givingOptions.length > 0 && (
               <div className="mt-2 rounded-lg border border-[#009DDC]/30 bg-[#f0f9ff] px-3 py-2.5">
                 <p className="text-[11px] font-medium text-gray-600 uppercase tracking-wide mb-1.5">
-                  Giving link
+                  Giving links <span className="text-gray-400 normal-case">(select one or more — one version per link)</span>
                 </p>
                 <div className="flex flex-col gap-1">
-                  {givingOptions.map((opt) => (
-                    <label
-                      key={opt.url}
-                      className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name={`giving-${office.id}`}
-                        checked={selectedGivingUrl === opt.url}
-                        onChange={() => onGivingUrlOverrideChange(office.id, opt.url)}
-                        className="w-3.5 h-3.5 text-[#009DDC] focus:ring-[#009DDC]"
-                      />
-                      {opt.label}
-                    </label>
-                  ))}
+                  {givingOptions.map((opt) => {
+                    const checked = selectedGivingUrls.includes(opt.url);
+                    return (
+                      <label
+                        key={opt.url}
+                        className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            const next = checked
+                              ? selectedGivingUrls.filter((u) => u !== opt.url)
+                              : [...selectedGivingUrls, opt.url];
+                            // Keep at least one selected — ignore an uncheck that would empty it.
+                            onGivingUrlOverrideChange(
+                              office.id,
+                              next.length > 0 ? next : selectedGivingUrls
+                            );
+                          }}
+                          className="w-3.5 h-3.5 rounded text-[#009DDC] focus:ring-[#009DDC]"
+                        />
+                        {opt.label}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             )}
