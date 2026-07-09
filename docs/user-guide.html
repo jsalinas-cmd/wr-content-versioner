@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>World Relief Content Versioner — User Guide</title>
+<style>
+  :root {
+    --wr-blue: #009DDC;
+    --wr-blue-dark: #0080b3;
+    --wr-yellow: #E9C31E;
+    --wr-teal: #00AF9A;
+    --wr-purple: #823D82;
+    --ink: #333333;
+    --gray: #808080;
+    --line: #e2e6e9;
+    --bg-soft: #f0f9ff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: Letter;
+    margin: 0.55in 0.6in 0.7in 0.6in;
+  }
+
+  .page { max-width: 7.3in; margin: 0 auto; }
+
+  /* ---- Masthead ---- */
+  .masthead {
+    background: var(--wr-blue);
+    color: #fff;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 22px;
+  }
+  .wordmark {
+    font-size: 12px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin: 0 0 6px 0;
+  }
+  .masthead h1 {
+    font-size: 26px;
+    margin: 0 0 4px 0;
+    line-height: 1.15;
+  }
+  .masthead p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.95;
+  }
+  .accent-row { height: 5px; border-radius: 3px; overflow: hidden; display: flex; margin-top: 16px; }
+  .accent-row span { flex: 1; }
+  .accent-row .y { background: var(--wr-yellow); }
+  .accent-row .t { background: var(--wr-teal); }
+  .accent-row .p { background: var(--wr-purple); }
+  .accent-row .b { background: #fff; opacity: .4; }
+
+  h2 {
+    color: var(--wr-blue);
+    font-size: 15px;
+    margin: 26px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--line);
+  }
+
+  /* ---- Intro callout ---- */
+  .callout {
+    background: var(--bg-soft);
+    border: 1px solid #cfe9f6;
+    border-left: 4px solid var(--wr-blue);
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin: 0 0 8px 0;
+  }
+  .callout.tip { background: #f0fbf9; border-color: #c7ece7; border-left-color: var(--wr-teal); }
+  .callout.warn { background: #fffaf0; border-color: #f3e3b0; border-left-color: var(--wr-yellow); }
+  .callout p { margin: 0; }
+  .callout .lead { font-weight: bold; color: var(--ink); }
+
+  /* ---- Steps ---- */
+  .step {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    page-break-inside: avoid;
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    flex: 0 0 30px;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background: var(--wr-blue);
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step .body { flex: 1; }
+  .step h3 { margin: 3px 0 4px 0; font-size: 13.5px; color: var(--ink); }
+  .step p { margin: 0 0 5px 0; }
+  .step ul { margin: 4px 0 0 0; padding-left: 18px; }
+  .step li { margin-bottom: 3px; }
+
+  /* ---- Table ---- */
+  table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 12px; }
+  th, td { text-align: left; padding: 8px 10px; border: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--wr-blue); color: #fff; font-size: 11.5px; }
+  tr:nth-child(even) td { background: #f7fafc; }
+  td .t { font-weight: bold; color: var(--wr-blue-dark); }
+
+  .pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 7px;
+    border-radius: 10px;
+    color: #fff;
+    background: var(--wr-teal);
+    vertical-align: middle;
+  }
+
+  .two-col { display: flex; gap: 16px; }
+  .two-col > div { flex: 1; }
+
+  .mini-title { font-weight: bold; color: var(--wr-blue); margin: 0 0 4px 0; font-size: 12.5px; }
+  ul.tight { margin: 4px 0 0 0; padding-left: 18px; }
+  ul.tight li { margin-bottom: 4px; }
+
+  .shot { margin: 9px 0 2px 0; page-break-inside: avoid; max-width: 480px; }
+  .shot img {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    display: block;
+  }
+  .shot figcaption { font-size: 9.5px; color: var(--gray); margin-top: 3px; }
+  .shot.small { max-width: 260px; }
+  .inline-note { font-size: 11.5px; color: var(--gray); margin: 8px 0 2px 0; }
+
+  .compliance {
+    background: #f7f0f7;
+    border: 1px solid #e3cfe3;
+    border-left: 4px solid var(--wr-purple);
+    border-radius: 8px;
+    padding: 13px 16px;
+    margin: 0 0 8px 0;
+  }
+  .compliance p { margin: 0; }
+  .compliance .lead { color: var(--wr-purple); font-weight: bold; }
+
+  footer {
+    margin-top: 26px;
+    padding-top: 10px;
+    border-top: 2px solid var(--line);
+    font-size: 10.5px;
+    color: var(--gray);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .avoid-break { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="masthead">
+    <p class="wordmark">World Relief</p>
+    <h1>Content Versioner — User Guide</h1>
+    <p>Paste one piece of content and get on-brand, office-ready versions for every U.S. office — automatically.</p>
+    <div class="accent-row"><span class="y"></span><span class="t"></span><span class="p"></span><span class="b"></span></div>
+  </div>
+
+  <div class="callout">
+    <p><span class="lead">What this tool does.</span> You write a piece once — an email, a social post, a mailing piece, or an announcement — and the Content Versioner produces a tailored version for each office you choose. Each version keeps the office director's voice, speaks to that office's audience, and swaps in the correct local giving link. It <strong>localizes your content; it does not rewrite it.</strong></p>
+  </div>
+
+  <div class="compliance">
+    <p><span class="lead">AI Policy compliance.</span> All content produced with this tool must adhere to World Relief's AI Policies and communications standards. The tool creates a draft — every version is your responsibility to review against those policies, and to confirm for accuracy, tone, and brand, before it is sent, posted, or published.</p>
+  </div>
+
+  <h2>Step-by-step</h2>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div class="body">
+      <h3>Log in</h3>
+      <p>Open the tool and enter the shared team password. You'll stay signed in for the day.</p>
+      <figure class="shot small"><img src="screenshots/01-login.png" alt="Login screen" /></figure>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">2</div>
+    <div class="body">
+      <h3>Choose a content type</h3>
+      <p>Pick what you're making. This tells the tool how to format each version (see the reference table below).</p>
+      <ul>
+        <li><strong>Email, Social, Mailing piece</strong> — for content you already have. Paste it in and the tool localizes it per office.</li>
+        <li><strong>Announcement</strong> — for content you don't have yet. Describe the event or news and the tool writes it in the office's voice.</li>
+        <li>For <strong>Social</strong>, also pick the platform: Facebook, Instagram, or LinkedIn.</li>
+      </ul>
+      <figure class="shot"><img src="screenshots/02-content-input.png" alt="Source Content panel with content type buttons and paste box" /></figure>
+      <p class="inline-note">Picking <strong>Social</strong> reveals the platform choices:</p>
+      <figure class="shot small"><img src="screenshots/03-social-platform.png" alt="Facebook, Instagram, LinkedIn platform buttons" /></figure>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">3</div>
+    <div class="body">
+      <h3>Add your content</h3>
+      <p>Paste your text into the box. For Email and Mailing piece you can also <strong>upload a PDF</strong> and the tool will pull the text out for you. For an <strong>Announcement</strong>, just describe it — what it is, when, where, and the ask.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">4</div>
+    <div class="body">
+      <h3>Add instructions (optional)</h3>
+      <p>Use the optional instructions box for anything specific to this batch — a deadline to emphasize, a tone note, a detail to keep.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">5</div>
+    <div class="body">
+      <h3>Select offices</h3>
+      <p>Check the offices you want versions for. <strong>California</strong> serves multiple sites, so you can check <strong>one or more giving links</strong> (Sacramento, Modesto, SoCal) — you'll get a separate version for each link you select, each tagged with the site name.</p>
+      <figure class="shot"><img src="screenshots/04-select-offices.png" alt="Select Offices panel with California giving-link checkboxes" /></figure>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">6</div>
+    <div class="body">
+      <h3>Generate versions</h3>
+      <p>Click <strong>Generate Versions</strong>. All versions are produced at once — usually within a few seconds.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">7</div>
+    <div class="body">
+      <h3>Review each version</h3>
+      <ul>
+        <li><strong>Highlighted text</strong> shows what was adapted for that office — hover over any highlight to see why.</li>
+        <li><strong>Keep in Mind</strong> notes flag things to check — including a warning if your content mentions a program an office doesn't actually offer.</li>
+        <li><strong>Copy to Clipboard</strong> grabs the version, ready to paste into your email or platform.</li>
+        <li><strong>Regenerate</strong> redoes just that one version if it's not quite right — the others stay as they are.</li>
+      </ul>
+      <figure class="shot"><img src="screenshots/05-review-version.png" alt="A generated version with highlighted adaptations, Keep in Mind notes, and Copy and Regenerate buttons" /></figure>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">8</div>
+    <div class="body">
+      <h3>Manage offices (Admin tab)</h3>
+      <p>The <strong>Admin</strong> tab lets you update any office's details — director name and title, giving link, audience and voice notes, and signature. Changes apply to every version generated afterward.</p>
+      <figure class="shot"><img src="screenshots/06-admin.png" alt="Admin tab with an office expanded, showing editable fields" /></figure>
+    </div>
+  </div>
+
+  <h2>Content types at a glance</h2>
+  <table class="avoid-break">
+    <thead>
+      <tr><th style="width:22%">Type</th><th style="width:40%">What it's for</th><th>What the tool does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="t">Email</span></td><td>An existing email to send from an office.</td><td>Keeps your email as-is; localizes voice, local references, signature, and swaps the giving link.</td></tr>
+      <tr><td><span class="t">Social</span></td><td>An existing post for Facebook, Instagram, or LinkedIn.</td><td>Preserves the post; tailors it to the office and the chosen platform.</td></tr>
+      <tr><td><span class="t">Mailing piece</span></td><td>Appeal letter, invitation card, insert, or postcard copy.</td><td>Keeps the piece and its structure; localizes the office-specific parts.</td></tr>
+      <tr><td><span class="t">Announcement</span> <span class="pill">writes it for you</span></td><td>An event or news item you haven't written yet.</td><td>Writes a finished announcement in the office's voice. Text only — no images.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Good to know</h2>
+  <div class="two-col avoid-break">
+    <div>
+      <p class="mini-title">The tool always…</p>
+      <ul class="tight">
+        <li>Keeps the office director's voice and audience.</li>
+        <li>Swaps in that office's correct giving link automatically.</li>
+        <li>Preserves your original piece — it localizes, never rewrites.</li>
+        <li>Flags content that contradicts what an office does.</li>
+      </ul>
+    </div>
+    <div>
+      <p class="mini-title">The tool never…</p>
+      <ul class="tight">
+        <li>Sends emails, posts to social, or publishes anything.</li>
+        <li>Invents facts, dates, or programs an office doesn't run.</li>
+        <li>Adds images (Announcements are written content only).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout tip" style="margin-top:14px;">
+    <p><span class="lead">Tip.</span> Always skim the <strong>Keep in Mind</strong> notes before you send. If a version reads off, click <strong>Regenerate</strong> on that card. If a whole run fails, wait a moment and generate again.</p>
+  </div>
+
+  <div class="callout warn">
+    <p><span class="lead">Before you send.</span> The tool produces a draft. A person should give every version a final read — confirm the facts, the giving link, that it sounds like the office, and that it adheres to World Relief's AI Policies — before it goes out.</p>
+  </div>
+
+  <footer>
+    <span>World Relief &middot; Content Versioner</span>
+    <span>Internal tool &middot; User Guide</span>
+  </footer>
+
+</div>
+</body>
+</html>
