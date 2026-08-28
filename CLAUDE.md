@@ -25,14 +25,21 @@ World Relief U.S. Office Content Versioning App. Staff paste source content (or 
 - Brand rules in `src/config/brand.ts` (World Relief brand guide voice/tone/terminology + giving link swap rule + 5 content-type formatting blocks)
 
 ## Offices (7)
-Western Washington, Chicagoland, California, Quad Cities, Fort Worth, Wisconsin, Spokane.
+Western Washington, Chicagoland, California, Quad Cities, Texas, Wisconsin, Spokane.
 Voice/audience fields are VERBATIM from each director's Microsoft Forms questionnaire.
 Blank field = not supplied; the prompt renders `(not provided)` rather than inventing.
 
 **Open questions with World Relief (as of 2026-08-27):**
-- Fort Worth's questionnaire was submitted by Bethany Fort, not by director Jonathan
-  Parsons, and the answers are in the first person. `personalAnecdotes` is deliberately
-  blank and `director.email` is blank until WR confirms both.
+- **Texas (`id: texas`, was `fort-worth`).** Bethany Fort filled the questionnaire out FOR
+  director Jonathan Parsons; Joel confirmed 2026-08-27 that the answers are his and cover
+  the whole Texas region, so `personalAnecdotes` was restored and the office was renamed.
+  **`director.email` is STILL blank** — the form only captured the submitter's address, and
+  no address for Jonathan Parsons has ever been supplied. Every other WR director follows
+  first-initial + surname, but a guessed address in a donor-facing signature is not worth it.
+- ⚠ **Renaming an office id requires adding the old id to `RETIRED_OFFICE_IDS` in
+  `officesStore.ts`.** The merge lets stored data win for ids KV already knows, so an edit to
+  the seed never reaches an existing office. Rename plus retire is how a correction gets
+  through, and without the retire step you get a duplicate.
 - Spokane supplied two giving links; the default is the one-time link, with monthly
   selectable per generation. Confirm the intended default.
 - Spokane's `preferredBibleVerses` says "anything stated in Q9", a reference to the

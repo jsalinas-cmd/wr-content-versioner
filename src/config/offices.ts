@@ -130,17 +130,22 @@ export const offices: OfficeConfig[] = [
     active: true,
   },
   {
-    // One of World Relief's Texas offices (WR brands the region publicly as World
-    // Relief Texas; Dallas and Austin are separate sites that would become their own
-    // entries if they submit questionnaires).
-    id: "fort-worth",
-    name: "World Relief Fort Worth",
+    // Covers the whole Texas region (Fort Worth, Dallas, Austin), confirmed by Joel
+    // 2026-08-27: the questionnaire answers are valid region-wide, and WR brands the
+    // region publicly as World Relief Texas. Submitted by Bethany Fort on Jonathan
+    // Parsons' behalf; Joel confirmed the answers are his, so they go out under his
+    // signature. Renamed from the id "fort-worth", which is now in RETIRED_OFFICE_IDS
+    // in officesStore so the superseded record is dropped from KV rather than lingering.
+    id: "texas",
+    name: "World Relief Texas",
     director: {
       name: "Jonathan Parsons",
       title: "Interim Executive Director",
-      // The questionnaire was submitted by Bethany Fort (BFort@wr.org), not by the
-      // director. No email address for Jonathan Parsons was supplied, so it stays
-      // blank rather than being guessed at.
+      // STILL BLANK. Joel confirmed on 2026-08-27 that the ANSWERS are Jonathan's,
+      // but no email address for him was ever supplied: the form captured the
+      // submitter's (BFort@wr.org). Every other WR director follows first-initial +
+      // surname, which would suggest JParsons@wr.org, but that is a guess and a wrong
+      // address in a donor-facing signature is not worth it. Fill in when WR sends it.
       email: "",
       phone: "(817) 615-9331",
     },
@@ -159,12 +164,9 @@ export const offices: OfficeConfig[] = [
     celebrationTone: "I want to be team oriented when it comes to success and also roll it into momentum and the \"what comes next?\" after a win.",
     crisisTone: "Ideally my tone would be calm, talk about the desire for transparency, and hope that the difficult season will pass.",
     financialAskStyle: "Try to give reasons why we are personally passionate about a topic. Ask the partner to join in if they feel a similar connection or feel like the issue is important enough.",
-    // DELIBERATELY BLANK. The questionnaire answer here was written in the first person
-    // ("I like to tie my mom's journey to the US...") but was submitted by Bethany Fort,
-    // not by Jonathan Parsons, so it is not established whose family story it is.
-    // Attributing an unverified personal story to a named director in donor-facing
-    // content is not a risk worth taking. Fill in once World Relief confirms.
-    personalAnecdotes: "",
+    // Restored 2026-08-27. Bethany Fort filled the form out FOR Jonathan Parsons, and
+    // Joel confirmed these are his answers, so the family story is his to tell.
+    personalAnecdotes: "I like to tie my mom's journey to the US and how I am here because of all the things she went through and the help that she got from organizations and churches along the way.\n\nAlso any particular staff or client stories that have been impactful over the years.",
     outOfCharacterTone: "Tone of crisis when a situation isn't directly affecting Texas clients, implication that we are aligning with politically liberal values without including a Biblical framework. Language that characterizes clients as victims or helpless.",
     active: true,
   },
