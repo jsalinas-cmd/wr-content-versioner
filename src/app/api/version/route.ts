@@ -36,6 +36,7 @@ function buildOfficeSystemPrompt(
 ): string {
   const director = office.director;
   const title = director.title.trim() || 'Office Director';
+  const email = director.email.trim() || '(not provided)';
   const phone = director.phone.trim() || '(not provided)';
   const givingUrl = (overrideGivingUrl ?? office.givingUrl).trim() || '(not configured)';
   const signature = office.signatureBlock.trim();
@@ -43,7 +44,7 @@ function buildOfficeSystemPrompt(
   const officeBlock = `## OFFICE: ${office.name.toUpperCase()}
 
 **Director:** ${director.name}, ${title}
-**Email:** ${director.email}
+**Email:** ${email}
 **Phone:** ${phone}
 
 **Giving URL (for the swap rule):** ${givingUrl}

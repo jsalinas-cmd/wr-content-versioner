@@ -98,4 +98,142 @@ export const offices: OfficeConfig[] = [
     outOfCharacterTone: "An aggressive, overly corporate, or purely transactional tone would feel completely out of character for me. We should avoid language that sounds boastful or cold and numbers-driven. Our voice must never seem exclusionary or slick. It should always remain grounded, warm, and respectful of the real-life struggles and journeys of the people we serve.",
     active: true,
   },
+  {
+    id: "quad-cities",
+    name: "World Relief Quad Cities",
+    director: {
+      name: "Jen Osing",
+      title: "Office Director",
+      email: "JOsing@wr.org",
+      phone: "563-349-2141",
+    },
+    givingUrl: "https://give.worldrelief.org/site/Donation2?2022.donation=form1&df_id=2022&mfc_pref=T",
+    // Jen supplied a sign-off phrase only ("With gratitude or with heartfelt gratitude"),
+    // not a full block. Name/title/office below are her own questionnaire answers.
+    signatureBlock: "With gratitude,\n\nJen Osing\nOffice Director\nWorld Relief Quad Cities",
+    audienceReligious: "Our donors and partners come from diverse faith backgrounds. However, many are Christian.",
+    audiencePolitical: "Our audience generally leans more liberal or politically moderate.",
+    // Left blank in the questionnaire — the app flags rather than invents.
+    politicalPhrasesToAvoid: "",
+    preferredBiblicalPhrases: "Loving your neighbor, welcoming the stranger, seeing the image of God in every person",
+    preferredBibleVerses: "Matthew 22:39, Matthew 25:35, Leviticus 19:33-34",
+    faithPhrasesToAvoid: "Avoid language that feels exclusionary because we have such a diverse audience",
+    programming: "Refugee resettlement\nFamily Literacy classes\nGood Neighbor Teams\nCitizenship classes\nImmigration legal services\nYouth mentoring\nAfter school and summer programming\nEmployment services\nCase management\nPublic benefits application support and referrals\nMental health services",
+    distinctive: "We are the only refugee resettlement agency within a 100-mile radius\nWe provide wrap-around services that support families from arrival through long-term integration\nWe combine direct services with strong volunteer engagement through Good Neighbor Teams\nWe serve communities across the Quad Cities as well as Southeastern Iowa",
+    accomplishments: "Opened the Scott County, IA office in 2023 and a small office in Southeast Iowa in 2024\nExpanded immigration legal services through a site extension at the Scott County, IA office\nContinued growing Good Neighbor Team programming\nCelebrated significant progress and learning gains among Family Literacy participants last year\nExpanded services into southeast Iowa",
+    sentenceStyle: "short, direct sentences",
+    celebrationTone: "Uplifting, grateful, and hopeful",
+    crisisTone: "Steady and reassuring",
+    financialAskStyle: "Emphasize the impact of gifts by connecting financial support to lives changed and communities strengthened. Express gratitude for both past support and future partnership.",
+    personalAnecdotes: "Client achievements, volunteer experiences, program successes, office milestones and community partnerships.",
+    outOfCharacterTone: "An overly corporate, impersonal, or generic tone",
+    active: true,
+  },
+  {
+    // One of World Relief's Texas offices (WR brands the region publicly as World
+    // Relief Texas; Dallas and Austin are separate sites that would become their own
+    // entries if they submit questionnaires).
+    id: "fort-worth",
+    name: "World Relief Fort Worth",
+    director: {
+      name: "Jonathan Parsons",
+      title: "Interim Executive Director",
+      // The questionnaire was submitted by Bethany Fort (BFort@wr.org), not by the
+      // director. No email address for Jonathan Parsons was supplied, so it stays
+      // blank rather than being guessed at.
+      email: "",
+      phone: "(817) 615-9331",
+    },
+    givingUrl: "https://give.worldrelief.org/site/Donation2?2107.donation=form1&df_id=2107&mfc_pref=T&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F",
+    signatureBlock: "Sincerely,\n\nJonathan Parsons\nInterim Executive Director",
+    audienceReligious: "Evangelical, mostly Baptist and non-denominational or Bible churches with a few that are more liturgical and a few mainline",
+    audiencePolitical: "Majority Republican and conservative, but mixed with progressive and moderate. Some may have voted for and support Trump and some may not have.",
+    politicalPhrasesToAvoid: "We should be cautious about how \"know your rights\" language could and has appeared to some of our partners in the past as helping people work around the law or protecting those who shouldn't be here. We can and should be critical of ICE and detention facilities when there are blatant human rights violations but otherwise should not advocate for ICE to be abolished or infer that we do not want them to do their job. Most people do recognize us as a trusted voice for understanding what is happening in our nation and communities through a Biblical lens even when we are critical. We always want to appeal to Scripture and the example of Jesus",
+    preferredBiblicalPhrases: "Phrases that I like to use tend to be along the lines of:\n\nFaithful Stewardship\n\nTrusting in the Lord for provision both physical and in wisdom to respond\n\nWalking faithfully in seasons of uncertainty (Hebrews 11 is one of my favorite chapters)",
+    preferredBibleVerses: "I like the idea of Psalm 139 talking about God's detailed knowledge of who we are and what we are doing. I normally would tie this into how we should treat our refugee neighbors as image bearers.\n\nHowever, I don't have a favorite verse in regards to the engaging the world's greatest crisis",
+    faithPhrasesToAvoid: "Prosperity gospel clichés? Things like \"just have more faith!\" \"God wants you to succeed!\"",
+    programming: "Resettlement services, cash assistance, employment, ESL classes, preschool programming, extended case management, church & volunteer mobilization",
+    distinctive: "We support all needs of clients whereas others provide limited programs of support like ESL only. We are well-established and part of a larger international support system. We also lead advocacy initiatives across the state, meeting with representatives and other advocacy organizations. We are distinct from many other Christian non-profits in that we offer holistic case management services and are partnering with the federal government in refugee resettlement. We are distinct from other refugee resettlement agencies that partner with the federal government because we prioritize the church's involvement.",
+    accomplishments: "When federal funding was suspended in 2025, we raised over $1 million in private funding and mobilized 318 volunteers to serve the shifting needs of clients and sustain services. We expanded to Dallas in March of 2023 and opened an Austin office and September of 2023. In response to needs of clients, we have created new programs including an early childhood education program, in-person ESL classes at our Dallas location, volunteer opportunities, and virtual ESL programs.",
+    sentenceStyle: "Medium sentences, I think. I prefer to explain context before conclusions or decisions.",
+    celebrationTone: "I want to be team oriented when it comes to success and also roll it into momentum and the \"what comes next?\" after a win.",
+    crisisTone: "Ideally my tone would be calm, talk about the desire for transparency, and hope that the difficult season will pass.",
+    financialAskStyle: "Try to give reasons why we are personally passionate about a topic. Ask the partner to join in if they feel a similar connection or feel like the issue is important enough.",
+    // DELIBERATELY BLANK. The questionnaire answer here was written in the first person
+    // ("I like to tie my mom's journey to the US...") but was submitted by Bethany Fort,
+    // not by Jonathan Parsons, so it is not established whose family story it is.
+    // Attributing an unverified personal story to a named director in donor-facing
+    // content is not a risk worth taking. Fill in once World Relief confirms.
+    personalAnecdotes: "",
+    outOfCharacterTone: "Tone of crisis when a situation isn't directly affecting Texas clients, implication that we are aligning with politically liberal values without including a Biblical framework. Language that characterizes clients as victims or helpless.",
+    active: true,
+  },
+  {
+    id: "wisconsin",
+    name: "World Relief Wisconsin",
+    director: {
+      name: "Gail Cornelius",
+      title: "Regional Director",
+      email: "GCornelius@wr.org",
+      phone: "920-231-3600",
+    },
+    givingUrl: "https://give.worldrelief.org/site/Donation2?df_id=1987&mfc_pref=T&1987.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F",
+    signatureBlock: "Warmly,\nGail\n\nGAIL CORNELIUS\nRegional Director- Wisconsin\nWorld Relief Wisconsin | worldrelief.org/wisconsin\nInstagram | Facebook\nO: 920.231.3600 | C: 920.808.5991",
+    audienceReligious: "Conservative Christian, I usually use a very light Christian tone.",
+    audiencePolitical: "Varied. Wisconsin is a purple state, so our audience carries political beliefs across the spectrum. Due to this, we typically avoid any sort of political statements.",
+    politicalPhrasesToAvoid: "We try to avoid speaking about political things in general. We should never name Trump and when needed, use the current administration. We would also avoid any condemnation of political alignment.",
+    preferredBiblicalPhrases: "Dependent on the focus of the email/newsletter. Generally, I use phrases like loving your neighbor, welcoming the stranger.",
+    preferredBibleVerses: "Dependent on the focus of the email/newsletter.",
+    // Left blank in the questionnaire — the app flags rather than invents.
+    faithPhrasesToAvoid: "",
+    programming: "Initial resettlement, economic empowerment, intensive case management, immigration legal services, advocacy",
+    distinctive: "We are the only resettlement agency (partnered with the federal government) in the communities we serve.",
+    accomplishments: "Welcoming over 2,000 refugees across the state of Wisconsin, building strong partnerships with churches and local government partners, offering services to an expanded number of communities.",
+    sentenceStyle: "Longer, narrative sentences.",
+    celebrationTone: "Christian tone, pride in team and community, referencing blessings/praise",
+    crisisTone: "Resilient, Christian, committed, responsive.",
+    financialAskStyle: "Avoid direct ask, seek partnership, name what the ask is for (specifically)",
+    personalAnecdotes: "Family stories, experiences with clients, community partnership observations.",
+    outOfCharacterTone: "Negative, defeated, aggressive.",
+    active: true,
+  },
+  {
+    id: "spokane",
+    name: "World Relief Spokane",
+    director: {
+      name: "Christi Armstrong",
+      title: "Executive Director",
+      email: "CArmstrong@wr.org",
+      phone: "509-321-1865",
+    },
+    // Christi supplied two links. Default is the one-time gift link, which is what a
+    // general appeal asks for; the monthly link is selectable per generation for
+    // monthly-giving campaigns. Confirm the default with World Relief.
+    givingUrl: "https://give.worldrelief.org/site/Donation2?df_id=2110&mfc_pref=T&2110.donation=form1",
+    givingUrlOptions: [
+      { label: "One-time giving", url: "https://give.worldrelief.org/site/Donation2?df_id=2110&mfc_pref=T&2110.donation=form1" },
+      { label: "Monthly giving", url: "https://give.worldrelief.org/site/Donation2?df_id=3241&mfc_pref=T&3241.donation=form1" },
+    ],
+    // Christi supplied sign-off phrases only ("With gratitude" / "In partnership with
+    // gratitude"). Name/title/office below are her own questionnaire answers.
+    signatureBlock: "With gratitude,\n\nChristi Armstrong\nExecutive Director\nWorld Relief Spokane",
+    audienceReligious: "Spokane's donor/partner audience tends to range from moderately conservative to moderately progressive. They tend to appreciate citing Bible verses and using language that speaks to the Biblical value of people being image bearers and supporting the vulnerable.",
+    audiencePolitical: "My interactions with donors/partners indicate that they prefer not to mix politics and faith. We had one of our long time, very generous church partners disengage during a campaign that was politically flavored. We were able to win them back but they clearly told us they are interested in the humanitarian aspect of our work rather than advocacy. Based on responses we get to appeals, I would say this is true for the majority of our support base. Our audience generally prefers humanitarian content rather than political or advocacy content.",
+    politicalPhrasesToAvoid: "Please avoid addressing issues that may be in the center of the radar in some areas of the country but not in this area. I'm sure you will avoid inflammatory or divisive language. I hope this thought helps - I have a deeply held conviction that every human being, regardless of any political opinions, faith persuasions, or personal preferences, is deeply loved by their Creator and is worthy of the kindness, grace, and caring extended by the Lord Himself to all of us. If you are referring to our vision to see restorative relationships with God... and creation (that nature) that does not seem to be a high priority in our demographic.",
+    preferredBiblicalPhrases: "I thank my God every time I remember you. In all my prayers for all of you, I always pray with joy because of your partnership in the gospel Philippians 1:3-4\nPartnership in the gospel\n\nI will rejoice in the LORD, I will be joyful in God my Savior.\nHabakkuk 3:18\n\nO give thanks unto the Lord, for he is good: for his mercy endures for ever.\nPsalm 107:1\n\nLet us hold unswervingly to the hope we profess, for he who promised is faithful. And let us consider how we may spur one another on toward love and good deeds.\nHebrews 10:23-24\n\nSome key words I often use - Refugee/immigrant friend and neighbors, Gratitude, partnership in the gospel, image bearers of Christ, Unity, Encouragement, Purpose",
+    // "Q9" refers back to a question on the source Microsoft Form (the preferred
+    // biblical phrases field above). Kept verbatim; worth resolving with Christi.
+    preferredBibleVerses: "Anything in Matthew 25:34-40 and anything stated in Q9. I have a very strong conviction that God is Sovereign in all things, deeply loves His people, deeply longs for all people to be His people and that we must look to Him in every situation for help and as our first and most reliable authority.",
+    faithPhrasesToAvoid: "Please don't use words or phrases that suggest a connection between faith and politics such as liberal, conservative, progressive, right, left, center",
+    programming: "Much of this information is on our website under the \"Our work\" tab. The Spokane office has\n\n- Economic Empowerment - Employment case management, job readiness training, job placement and retention assistance, career advancement support, employer relations development, etc\n- Integration & Wellness - Extended case management; medical resource navigation; mental health and psycho social support groups and community resource navigation for adults and youth; housing stabilization resources; an Education Center that offers a wide variety of learning experiences; our Friendship Centers offers outreach and drop in services for refugee and immigrant communities and are staffed by Community Ambassadors who are leaders in the various ethnic communities.\n- Resettlement - welcoming new arrivals and giving assistance during the 1st 90 days following arrival to secure housing, placement in schools, connection to resources for employment support and other community resources, accessing public benefits, accessing medical and legal services as needed, etc.\n- Church and Community Engagement - assists volunteers, churches, businesses, and other community partners with engaging in the mission of World Relief",
+    distinctive: "World Relief Spokane has been serving refugees and immigrants in Spokane for 35 years. We are a distinctly Christian organization that collaborates with a wide network of community partners, and rely primarily on our partnership with local churches to create a welcoming community where refugees feel wanted and supported; seen, respected, and valuable; and like members of a community where they belong and make valuable contributions.",
+    accomplishments: "World Relief Spokane has continuously provided high quality, professionally staffed services to the refugee community. Our Community Ambassador team is a one of a kind group in Spokane made up of former refugees/immigrants who are leaders in the various ethnic communities providing support and assistance to any refugee/immigrant in need of assistance. Our Education Center is staffed by highly qualified individuals who provide a wide variety of learning experiences from ESL classes and tutoring, to employment development, health and well-being, banking and finances management, computer literacy, driver license prep, citizenship prep, sewing classes and many others. We have developed a robust Youth Programs that that enable youth to engage in healthy and wholesome activities like hiking, basketball, BMX groups, trips to our local Children's Discovery Center and family day at Silverwood Theme Park, and many more.",
+    sentenceStyle: "This Director appreciates Smart Brevity with a relational rather than direct tone. I believe it is true that clarity is kindness. As a pastor, my tendency regarding outward communication style is to gather, explore together, and with intentionality and purpose engage people in a worthy and compelling cause.",
+    celebrationTone: "I love to celebrate successes and will often use words like fabulous, wonderful, outstanding. I do endeavor to give credit where credit is due and always prefer to give credit to someone else - and to the Lord.",
+    crisisTone: "When addressing a crisis, I prefer to focus on the human side of the story. I am committed to avoiding overstating or sensationalizing a crisis for any reason. I like to relate the presenting situation to the human experience. For example, our recent fires in Spokane was a prime opportunity to tie the refugee experience to the experience people in our community were feeling in a very practical, compelling, non-sensational way.",
+    financialAskStyle: "There must be a compelling reason for asking for support. I prefer a clear, direct, and grateful ask for support. So, answering the questions: Why are we asking? What are we asking for? How will the finances be used? And clearly stating that every bit of support is appreciated. I don't like high pressure. I prefer compelling.",
+    personalAnecdotes: "I often share stories of my personal experience of joining the World Relief staff with little knowledge of refugees and fairly strong beliefs related to my faith foundation, and my early experiences serving the Sudanese community. I was completely unprepared for, and at first completely unwilling to be the \"Sudanese mom.\" I have a plethora of stories of my own personal growth and the fairly radical shift in my world view as a result of engaging in community with my Sudanese friends.",
+    outOfCharacterTone: "Any tone that is overly direct or lacks an expression of gratitude, humility and a desire to engage and understand would be uncharacteristic of my personal beliefs and goals for communication. I embrace that the position of leadership in WR comes with an expectation of a level of expertise. I believe there is a line dividing humbly sharing that expertise and becoming over bearing or braggadocious.",
+    active: true,
+  },
 ];

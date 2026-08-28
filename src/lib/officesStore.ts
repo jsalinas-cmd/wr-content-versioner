@@ -27,6 +27,25 @@ export async function getAllOffices(): Promise<OfficeConfig[]> {
       await kv.set(KV_KEY, seedOffices);
       return seedOffices;
     }
+    // Merge, don't replace. Admin edits live only in KV, but NEW offices only ever
+    // arrive in the seed — so a stored office wins for any id present in both (which
+    // preserves every edit made in the Admin tab), and seed offices KV has never seen
+    // are appended. Without this, adding an office to the seed would never reach
+    // production, because the stored array shadows the seed entirely.
+    const storedIds = new Set(stored.map((office) => office.id));
+    const unseen = seedOffices.filter((office) => !storedIds.has(office.id));
+    if (unseen.length > 0) {
+      const merged = [...stored, ...unseen];
+      try {
+        await kv.set(KV_KEY, merged);
+      } catch (error) {
+        // Best effort. Serving the merged list is what matters; if the write fails
+        // the merge just runs again on the next read.
+        console.warn('[officesStore] could not persist seed merge:', error);
+      }
+      return merged;
+    }
+
     // Return stored configs as-is. Never fabricate missing fields — especially
     // givingUrl, where a wrong donation link misroutes gifts. A blank field is a
     // valid "not configured" state that the app flags rather than invents.
