@@ -7,7 +7,6 @@ interface OutputCardProps {
   officeName: string;
   variantLabel?: string;
   directorName: string;
-  directorEmail?: string;
   content: string;
   adaptations: Adaptation[];
   keepInMind: KeepInMind[];
@@ -110,7 +109,6 @@ export default function OutputCard({
   officeName,
   variantLabel,
   directorName,
-  directorEmail,
   content,
   adaptations,
   keepInMind,
@@ -161,9 +159,8 @@ export default function OutputCard({
   }
 
   const subject = isLoading ? officeName : buildEmailSubject(content, officeName);
-  const fromDisplay = directorEmail
-    ? `${directorName} <${directorEmail}>`
-    : directorName;
+  // Name only. Contact details are applied downstream in HubSpot, never by this tool.
+  const fromDisplay = directorName;
 
   return (
     <article

@@ -1,8 +1,9 @@
+// Personal contact details (email, direct/cell phone) are deliberately NOT stored.
+// The office sign-off with contact information is applied downstream in HubSpot, where
+// staff paste the generated content, so the tool has no reason to hold or emit them.
 export interface OfficeDirector {
   name: string;
   title: string;
-  email: string;
-  phone: string;
 }
 
 export interface GivingLinkOption {
@@ -84,7 +85,6 @@ export interface VersionResult {
   officeId: string;
   officeName: string;
   directorName: string;
-  directorEmail: string;
   content: string;
   adaptations: Adaptation[];
   keepInMind: KeepInMind[];

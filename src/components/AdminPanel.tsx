@@ -347,24 +347,6 @@ export default function AdminPanel({ onUnauthorized }: AdminPanelProps) {
                             className={inputCls}
                           />
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                          <input
-                            type="email"
-                            value={office.director.email}
-                            onChange={(e) => updateDirectorField(office.id, 'email', e.target.value)}
-                            className={inputCls}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
-                          <input
-                            type="tel"
-                            value={office.director.phone}
-                            onChange={(e) => updateDirectorField(office.id, 'phone', e.target.value)}
-                            className={inputCls}
-                          />
-                        </div>
                       </div>
                     </fieldset>
 

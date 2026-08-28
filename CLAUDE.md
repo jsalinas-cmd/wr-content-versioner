@@ -24,6 +24,28 @@ World Relief U.S. Office Content Versioning App. Staff paste source content (or 
   because the stored array shadowed the seed entirely. Adding an office = edit the seed.
 - Brand rules in `src/config/brand.ts` (World Relief brand guide voice/tone/terminology + giving link swap rule + 5 content-type formatting blocks)
 
+## NO PERSONAL CONTACT DETAILS (hard rule, 2026-08-27)
+
+The tool never outputs an email address, phone number or cell number, and does not store
+them. **The office sign-off carrying contact information is applied downstream in HubSpot**,
+where staff paste the generated content, so anything this tool added would duplicate or
+contradict it.
+
+Enforced in four places, because any one alone would leak:
+- `OfficeDirector` carries `name` and `title` only. No `email`, no `phone`.
+- `brand.ts` has a CONTACT DETAILS section forbidding the model from writing or inventing
+  one, even if the source content contains one.
+- `buildOfficeSystemPrompt` no longer injects an email or phone line.
+- `officesStore.scrub()` runs on **every** read path and strips any line containing an
+  address or a phone number from a signature block, plus any legacy `email`/`phone`
+  property left on a stored director object.
+
+⚠ **The scrubber is not belt-and-braces, it is load-bearing.** Removing the fields from the
+TypeScript type does NOT remove them from JSON already written to KV, and the Admin tab can
+paste a contact line back into a signature at any time. Verified by shimming `@vercel/kv`
+with dirty records: signature contact lines stripped, legacy director properties dropped,
+zero addresses in the API payload.
+
 ## Offices (7)
 Western Washington, Chicagoland, California, Quad Cities, Texas, Wisconsin, Spokane.
 Voice/audience fields are VERBATIM from each director's Microsoft Forms questionnaire.

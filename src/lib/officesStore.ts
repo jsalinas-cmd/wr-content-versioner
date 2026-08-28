@@ -20,6 +20,45 @@ const KV_KEY = 'offices_v3';
 //   not just the Fort Worth site.
 const RETIRED_OFFICE_IDS = new Set<string>(['fort-worth']);
 
+// Contact details must never reach generated content: the office sign-off that carries
+// them is applied downstream in HubSpot, where staff paste the output. The seed no longer
+// holds any, but KV records written before that rule still do, and the Admin tab can paste
+// one back in at any time. So scrub every signature block on read rather than trusting the
+// stored data to be clean. A guarantee that depends on remembering to retire an id is not
+// a guarantee.
+const EMAIL_LINE = /[\w.+-]+@[\w-]+\.[\w.]+/;
+const PHONE_LINE = /\+?\d[\d().\-\s]{6,}\d/;
+
+export function scrubSignature(block: string): string {
+  return block
+    .split('\n')
+    .filter((line) => !EMAIL_LINE.test(line) && !PHONE_LINE.test(line))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function scrub(offices: OfficeConfig[]): OfficeConfig[] {
+  return offices.map((office) => {
+    const cleaned = scrubSignature(office.signatureBlock ?? '');
+    // Records written to KV before the contact-details rule still carry `email` and
+    // `phone` on the director object. Dropping the fields from the TypeScript type does
+    // NOT remove them from stored JSON, and the spread would carry them straight into the
+    // API response, so rebuild the director from the fields we actually keep.
+    const director = { name: office.director.name, title: office.director.title };
+    const legacy = office.director as unknown as Record<string, unknown>;
+    const hadContact = 'email' in legacy || 'phone' in legacy;
+    if (cleaned === office.signatureBlock && !hadContact) return office;
+    if (cleaned !== office.signatureBlock) {
+      console.warn(`[officesStore] stripped contact details from ${office.id} signature block`);
+    }
+    if (hadContact) {
+      console.warn(`[officesStore] dropped legacy director email/phone from ${office.id}`);
+    }
+    return { ...office, director, signatureBlock: cleaned };
+  });
+}
+
 function kvAvailable(): boolean {
   return !!process.env.KV_REST_API_URL;
 }
@@ -27,7 +66,7 @@ function kvAvailable(): boolean {
 export async function getAllOffices(): Promise<OfficeConfig[]> {
   if (!kvAvailable()) {
     console.warn('[officesStore] KV_REST_API_URL not set — using seed data');
-    return seedOffices;
+    return scrub(seedOffices);
   }
 
   // KV is configured, but if the store is unreachable (deleted/paused DB, bad URL),
@@ -38,7 +77,7 @@ export async function getAllOffices(): Promise<OfficeConfig[]> {
     const stored = await kv.get<OfficeConfig[]>(KV_KEY);
     if (!stored || stored.length === 0) {
       await kv.set(KV_KEY, seedOffices);
-      return seedOffices;
+      return scrub(seedOffices);
     }
     // Merge, don't replace. Admin edits live only in KV, but NEW offices only ever
     // arrive in the seed — so a stored office wins for any id present in both (which
@@ -57,16 +96,16 @@ export async function getAllOffices(): Promise<OfficeConfig[]> {
         // the merge just runs again on the next read.
         console.warn('[officesStore] could not persist seed merge:', error);
       }
-      return merged;
+      return scrub(merged);
     }
 
     // Return stored configs as-is. Never fabricate missing fields — especially
     // givingUrl, where a wrong donation link misroutes gifts. A blank field is a
     // valid "not configured" state that the app flags rather than invents.
-    return live;
+    return scrub(live);
   } catch (error) {
     console.warn('[officesStore] KV unreachable — falling back to seed data:', error);
-    return seedOffices;
+    return scrub(seedOffices);
   }
 }
 

@@ -63,7 +63,7 @@ function validatePatch(body: unknown): { valid: true; patch: Partial<OfficeConfi
       return { valid: false, error: 'director must be an object' };
     }
     const dir = d as Record<string, unknown>;
-    for (const field of ['name', 'title', 'email', 'phone'] as (keyof OfficeDirector)[]) {
+    for (const field of ['name', 'title'] as (keyof OfficeDirector)[]) {
       if (field in dir && typeof dir[field] !== 'string') {
         return { valid: false, error: `director.${field} must be a string` };
       }

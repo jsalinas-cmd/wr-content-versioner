@@ -36,16 +36,12 @@ function buildOfficeSystemPrompt(
 ): string {
   const director = office.director;
   const title = director.title.trim() || 'Office Director';
-  const email = director.email.trim() || '(not provided)';
-  const phone = director.phone.trim() || '(not provided)';
   const givingUrl = (overrideGivingUrl ?? office.givingUrl).trim() || '(not configured)';
   const signature = office.signatureBlock.trim();
 
   const officeBlock = `## OFFICE: ${office.name.toUpperCase()}
 
 **Director:** ${director.name}, ${title}
-**Email:** ${email}
-**Phone:** ${phone}
 
 **Giving URL (for the swap rule):** ${givingUrl}
 
@@ -77,7 +73,7 @@ ${fieldOrNone(office.preferredBibleVerses)}
 ${
   signature
     ? `Append this signature exactly as written at the end (for email and mailing pieces), with no modifications:\n\n${signature}`
-    : `No signature block is configured for this office. For email and mailing pieces, close in the director's voice and sign with: ${director.name}, ${title}, ${office.name}. Do not invent a phone number or address.`
+    : `No signature block is configured for this office. For email and mailing pieces, close in the director's voice and sign with: ${director.name}, ${title}, ${office.name}.`
 }`;
 
   return officeBlock;
@@ -128,7 +124,6 @@ async function generateOne(
     officeId: office.id,
     officeName: office.name,
     directorName: office.director.name,
-    directorEmail: office.director.email,
     variantLabel,
     givingUrlUsed: overrideUrl || undefined,
   };

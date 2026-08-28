@@ -71,7 +71,6 @@ export default function OutputSection({
                 officeName={v.officeName}
                 variantLabel={v.variantLabel}
                 directorName={v.directorName}
-                directorEmail={v.directorEmail}
                 content={v.content}
                 adaptations={v.adaptations}
                 keepInMind={v.keepInMind}

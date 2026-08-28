@@ -1,5 +1,10 @@
 import type { OfficeConfig } from '@/types';
 
+// ⚠ NO PERSONAL CONTACT DETAILS. Director emails and phone numbers were removed on
+// 2026-08-27 (Joel): the office sign-off carrying contact information is applied
+// downstream in HubSpot, where staff paste the generated content. Signature blocks here
+// carry the sign-off phrase, name, title and office ONLY. Never add an email, a direct
+// line or a cell number back into one.
 // World Relief U.S. office configs. Voice/audience fields are VERBATIM from each
 // director's questionnaire (Microsoft Forms export, 2026). Operational fields
 // (director title/phone, givingUrl, signatureBlock) were NOT in the questionnaire
@@ -13,11 +18,9 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Medard Ngueita",
       title: "Executive Director",
-      email: "MNgueita@wr.org",
-      phone: "206.446.8769",
     },
     givingUrl: "https://give.worldrelief.org/site/Donation2?df_id=3220&3220.donation=form1&mfc_pref=T",
-    signatureBlock: "Medard Ngueita\nExecutive Director\nWorld Relief Western Washington\n206.446.8769 | MNgueita@wr.org",
+    signatureBlock: "Medard Ngueita\nExecutive Director\nWorld Relief Western Washington",
     audienceReligious: "Our audience is highly mixed.",
     audiencePolitical: "Overall, our area is progressive and leans strongly liberal. However, the Whatcom area leans more conservative than the other two offices. Because of the contentious nature between the two main political parties and because a certain “flavor” of Christianity is seen as a common trait of ultra conservatives, Christians/Christianity is sometimes regarded negatively by many our area.",
     politicalPhrasesToAvoid: "We avoid partisan language, especially language that solely blames a political party for a certain action or situation. Medard very clearly calls out injustices and myths about immigrants but is careful.",
@@ -41,8 +44,6 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Susan Sperry",
       title: "Executive Director",
-      email: "ssperry@wr.org",
-      phone: "630-580-5101",
     },
     givingUrl: "https://give.worldrelief.org/site/Donation2?2226.donation=form1&df_id=2226&mfc_pref=T",
     signatureBlock: "Serving with you,\n\nSusan Sperry\nExecutive Director\nWorld Relief Chicagoland",
@@ -69,8 +70,6 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Mark Dandeneau",
       title: "Regional Director",
-      email: "MDandeneau@wr.org",
-      phone: "",
     },
     // California is a region with 3 sub-sites; the user picks which giving link to swap in
     // per generation. Default is Sacramento — WR plans to consolidate all CA giving to it next FY.
@@ -104,8 +103,6 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Jen Osing",
       title: "Office Director",
-      email: "JOsing@wr.org",
-      phone: "563-349-2141",
     },
     givingUrl: "https://give.worldrelief.org/site/Donation2?2022.donation=form1&df_id=2022&mfc_pref=T",
     // Jen supplied a sign-off phrase only ("With gratitude or with heartfelt gratitude"),
@@ -141,13 +138,6 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Jonathan Parsons",
       title: "Interim Executive Director",
-      // STILL BLANK. Joel confirmed on 2026-08-27 that the ANSWERS are Jonathan's,
-      // but no email address for him was ever supplied: the form captured the
-      // submitter's (BFort@wr.org). Every other WR director follows first-initial +
-      // surname, which would suggest JParsons@wr.org, but that is a guess and a wrong
-      // address in a donor-facing signature is not worth it. Fill in when WR sends it.
-      email: "",
-      phone: "(817) 615-9331",
     },
     givingUrl: "https://give.worldrelief.org/site/Donation2?2107.donation=form1&df_id=2107&mfc_pref=T&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F",
     signatureBlock: "Sincerely,\n\nJonathan Parsons\nInterim Executive Director",
@@ -176,11 +166,9 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Gail Cornelius",
       title: "Regional Director",
-      email: "GCornelius@wr.org",
-      phone: "920-231-3600",
     },
     givingUrl: "https://give.worldrelief.org/site/Donation2?df_id=1987&mfc_pref=T&1987.donation=form1&utm_source=referral&utm_medium=external&utm_campaign=https%3A%2F%2Fteams.public.onecdn.static.microsoft%2F",
-    signatureBlock: "Warmly,\nGail\n\nGAIL CORNELIUS\nRegional Director- Wisconsin\nWorld Relief Wisconsin | worldrelief.org/wisconsin\nInstagram | Facebook\nO: 920.231.3600 | C: 920.808.5991",
+    signatureBlock: "Warmly,\nGail\n\nGAIL CORNELIUS\nRegional Director- Wisconsin\nWorld Relief Wisconsin",
     audienceReligious: "Conservative Christian, I usually use a very light Christian tone.",
     audiencePolitical: "Varied. Wisconsin is a purple state, so our audience carries political beliefs across the spectrum. Due to this, we typically avoid any sort of political statements.",
     politicalPhrasesToAvoid: "We try to avoid speaking about political things in general. We should never name Trump and when needed, use the current administration. We would also avoid any condemnation of political alignment.",
@@ -205,8 +193,6 @@ export const offices: OfficeConfig[] = [
     director: {
       name: "Christi Armstrong",
       title: "Executive Director",
-      email: "CArmstrong@wr.org",
-      phone: "509-321-1865",
     },
     // Christi supplied two links. Default is the one-time gift link, which is what a
     // general appeal asks for; the monthly link is selectable per generation for
