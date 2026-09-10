@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Header from "@/components/Header";
 import PasswordGate from "@/components/PasswordGate";
 import ContentInput from "@/components/ContentInput";
@@ -13,6 +13,7 @@ type Tab = "versioner" | "admin";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("versioner");
   const [content, setContent] = useState("");
   const [contentType, setContentType] = useState<ContentType>("email");
@@ -33,6 +34,37 @@ export default function Home() {
     additionalInstructions: string;
   } | null>(null);
   const [regeneratingKeys, setRegeneratingKeys] = useState<Set<string>>(new Set());
+  // Bumped by Start New to remount ContentInput, which holds its own PDF-upload state.
+  const [formKey, setFormKey] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((res) => setAuthenticated(res.ok))
+      .catch(() => setAuthenticated(false))
+      .finally(() => setCheckingAuth(false));
+  }, []);
+
+  const handleStartNew = useCallback(() => {
+    if (
+      !window.confirm(
+        "Start a new version? This clears the current results. Copy anything you still need first."
+      )
+    ) {
+      return;
+    }
+    setContent("");
+    setContentType("email");
+    setSocialPlatform("facebook");
+    setAdditionalInstructions("");
+    setSelectedOffices([]);
+    setGivingUrlOverrides({});
+    setVersions([]);
+    setLastParams(null);
+    setRegeneratingKeys(new Set());
+    setError("");
+    setFormKey((k) => k + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleGenerate = useCallback(async () => {
     if (!content.trim()) {
@@ -145,6 +177,8 @@ export default function Home() {
     [lastParams]
   );
 
+  if (checkingAuth) return null;
+
   if (!authenticated) {
     return <PasswordGate onAuthenticated={() => setAuthenticated(true)} />;
   }
@@ -190,6 +224,7 @@ export default function Home() {
             </div>
 
             <ContentInput
+              key={formKey}
               content={content}
               onContentChange={setContent}
               contentType={contentType}
@@ -244,6 +279,7 @@ export default function Home() {
               loadingOffices={loadingOffices}
               onRegenerate={handleRegenerate}
               regeneratingKeys={regeneratingKeys}
+              onStartNew={handleStartNew}
             />
           </div>
         ) : (

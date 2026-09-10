@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Lets the page restore a session on reload instead of showing the password gate
+// while a valid 24hr cookie is still sitting in the browser.
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const authCookie = request.cookies.get('wr_auth');
+  if (!authCookie || authCookie.value !== 'authenticated') {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
+  return NextResponse.json({ authenticated: true }, { status: 200 });
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
 

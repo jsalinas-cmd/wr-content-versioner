@@ -11,6 +11,7 @@ interface OutputSectionProps {
   loadingOffices: string[];
   onRegenerate: (version: VersionResult) => void;
   regeneratingKeys: Set<string>;
+  onStartNew: () => void;
 }
 
 function getOfficeName(id: string): string {
@@ -23,6 +24,7 @@ export default function OutputSection({
   loadingOffices,
   onRegenerate,
   regeneratingKeys,
+  onStartNew,
 }: OutputSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const hasContent = versions.length > 0 || (isLoading && loadingOffices.length > 0);
@@ -42,6 +44,8 @@ export default function OutputSection({
     ? loadingOffices.filter((id) => !completedIds.has(id))
     : [];
 
+  const canStartNew = !isLoading && versions.length > 0;
+
   const allCards = [
     ...versions.map((v, i) => ({ type: 'complete' as const, data: v, index: i })),
     ...pendingOffices.map((id, i) => ({ type: 'loading' as const, id, index: versions.length + i })),
@@ -52,9 +56,20 @@ export default function OutputSection({
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold text-gray-900">Versioned Content</h2>
         {versions.length > 0 && (
-          <span className="text-xs text-gray-400">
-            {versions.length} version{versions.length !== 1 ? 's' : ''} generated
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-gray-400">
+              {versions.length} version{versions.length !== 1 ? 's' : ''} generated
+            </span>
+            {canStartNew && (
+              <button
+                type="button"
+                onClick={onStartNew}
+                className="text-xs font-semibold text-[#009DDC] hover:text-[#0080b3] transition-colors focus:outline-none focus:underline"
+              >
+                Start a new version
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -96,6 +111,19 @@ export default function OutputSection({
           );
         })}
       </div>
+
+      {canStartNew && (
+        <div className="flex flex-col items-center gap-2 pt-2 pb-4">
+          <p className="text-sm text-gray-500">Done with these? Clear the form and version something new.</p>
+          <button
+            type="button"
+            onClick={onStartNew}
+            className="px-10 py-3.5 bg-white text-[#009DDC] border-2 border-[#009DDC] font-semibold rounded-lg hover:bg-[#009DDC] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#009DDC] focus:ring-offset-2 transition-all duration-200 text-sm shadow-sm active:scale-[0.98]"
+          >
+            Start a New Version
+          </button>
+        </div>
+      )}
     </section>
   );
 }
