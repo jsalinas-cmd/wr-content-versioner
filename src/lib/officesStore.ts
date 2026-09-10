@@ -126,14 +126,20 @@ export async function updateOffice(id: string, patch: Partial<OfficeConfig>): Pr
   const next = [...all];
   next[index] = updated;
 
-  if (kvAvailable()) {
-    try {
-      await kv.set(KV_KEY, next);
-    } catch {
-      throw new Error(
-        'Office changes could not be saved — the data store (KV) is currently unavailable. Reconnect Upstash Redis in Vercel Storage and try again.'
-      );
-    }
+  // Never report a save that didn't happen. Without KV there is nowhere to write,
+  // and returning `updated` anyway made the Admin tab show "saved" for an edit that
+  // vanished on the next load.
+  if (!kvAvailable()) {
+    throw new Error(
+      'Office changes could not be saved: no data store (KV) is configured. Connect Upstash Redis in Vercel Storage and redeploy.'
+    );
+  }
+  try {
+    await kv.set(KV_KEY, next);
+  } catch {
+    throw new Error(
+      'Office changes could not be saved — the data store (KV) is currently unavailable. Reconnect Upstash Redis in Vercel Storage and try again.'
+    );
   }
 
   return updated;
