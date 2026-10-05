@@ -10,13 +10,28 @@ World Relief U.S. Office Content Versioning App. Staff paste source content (or 
 - `@vercel/kv` (Upstash Redis) for persisted office configs
 - Vercel deployment
 
+## Deploy (corrected 2026-09-10)
+- **Live: https://wr-content-versioner-ashy.vercel.app**, in World Relief's Vercel
+  (`jsalinas-8652s-projects`). **Push to `main` deploys it** (git-connected). Repo is on
+  `jsalinas-cmd`, so `gh auth switch --user jsalinas-cmd` before pushing.
+- ⚠ **Never `vercel --prod` from here.** Joel's Vercel CLI login cannot see WR's Vercel at all
+  (no deploys, logs, env vars or stores). Until 2026-09-10 this folder was linked to a stale
+  duplicate project in `joel-salinas-projects` that owned `wr-content-versioner.vercel.app`;
+  every CLI deploy, env change and log read hit that copy while staff used the real one. It
+  was deleted and `.vercel/` removed. Runtime logs and env vars for the real app are only
+  visible in WR's Vercel dashboard.
+- KV is Upstash `wr-offices2` (`open-shiner-165015`), connected to the project in WR's Vercel.
+- ⚠ The `wr_auth` cookie is the constant string `authenticated`, so anyone can forge it and
+  skip the password (including editing giving links in Admin). Joel declined the fix
+  2026-09-10 (internal tool, accepted risk). Don't re-raise unless the audience changes.
+
 ## Architecture
 - Single-page app with password gate
 - `/api/auth` — Password verification (cookie-based, 24hr expiry)
 - `/api/version` — Claude-powered content versioning endpoint
 - `/api/extract-pdf` — multipart PDF upload → Claude PDF input → extracted markdown text
 - `/api/offices` — list/edit office configs (backed by KV, falls back to seed)
-- Office configs in `src/config/offices.ts` (7 offices seeded, expandable to 16)
+- Office configs in `src/config/offices.ts` (11 offices seeded as of 2026-10-05, expandable to 16)
 - ⚠ **The seed file is not the source of truth in production — KV is.** `getAllOffices`
   merges them: a KV-stored office wins for any id present in both (preserving Admin-tab
   edits), and seed offices KV has never seen get appended and written back. Before this
@@ -46,8 +61,9 @@ paste a contact line back into a signature at any time. Verified by shimming `@v
 with dirty records: signature contact lines stripped, legacy director properties dropped,
 zero addresses in the API payload.
 
-## Offices (7)
-Western Washington, Chicagoland, California, Quad Cities, Texas, Wisconsin, Spokane.
+## Offices (11)
+Western Washington, Chicagoland, California, Quad Cities, Texas, Wisconsin, Spokane,
+Western New York, Tri-Cities, Triad, Baltimore (last four added 2026-10-05 from form rows 8-11).
 Voice/audience fields are VERBATIM from each director's Microsoft Forms questionnaire.
 Blank field = not supplied; the prompt renders `(not provided)` rather than inventing.
 
@@ -66,6 +82,13 @@ Blank field = not supplied; the prompt renders `(not provided)` rather than inve
   selectable per generation. Confirm the intended default.
 - Spokane's `preferredBibleVerses` says "anything stated in Q9", a reference to the
   source form that means nothing at generation time.
+- **Baltimore's giving link** is `worldrelief.org/baltimore/get-involved/volunteer/#donate`, a
+  volunteer page anchor, not a give.worldrelief.org form. Confirm the real donation link.
+- **Tri-Cities' giving link** is the office's give page (`worldrelief.org/tricities/give-hope/`),
+  not a donation form. Probably fine; confirm.
+- Triad left political phrases and Bible verses blank; faith phrases to avoid is "n/a".
+- Tri-Cities and Baltimore signatures carried phones, an email, a street address and URLs;
+  stripped under the no-contact rule.
 - Wisconsin's signature block contains the literal words "Instagram | Facebook" (pasted
   from an email signature) and will be appended verbatim.
 
